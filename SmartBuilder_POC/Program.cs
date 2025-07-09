@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartBuilder_POC.Editors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +17,11 @@ namespace SmartBuilder_POC
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmSmartBuilder());
+
+            string connStr = TestDbFactory.CriarBancoTeste();
+
+            Application.Run(new SelectQueryBuilderForm(connStr));
+            //Application.Run(new FrmSmartBuilder());
         }
     }
 }

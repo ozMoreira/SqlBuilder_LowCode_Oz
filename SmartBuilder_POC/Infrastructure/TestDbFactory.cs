@@ -38,17 +38,17 @@ public class TestDbFactory
                 );
 
                 -- Dados de Autores
-                INSERT INTO Autores (nm_autor) VALUES 
+                INSERT INTO TB_AUTORES (nm_autor) VALUES 
                     ('Machado de Assis'),
                     ('Clarice Lispector');
 
                 -- Dados de Gêneros
-                INSERT INTO Generos (nm_genero) VALUES 
+                INSERT INTO TB_GENEROS (nm_genero) VALUES 
                     ('Romance'),
                     ('Filosofia');
 
                 -- Dados de Livros
-                INSERT INTO Livros (ds_titulo, id_autor, id_genero) VALUES 
+                INSERT INTO TB_LIVROS (ds_titulo, id_autor, id_genero) VALUES 
                     ('Dom Casmurro', 1, 1),
                     ('A Hora da Estrela', 2, 1),
                     ('Perto do Coração Selvagem', 2, 2);
