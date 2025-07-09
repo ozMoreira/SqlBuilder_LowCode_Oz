@@ -84,7 +84,7 @@ namespace SmartBuilder_POC
         {
             var textos = new List<string>();
 
-            foreach (Control c in pnlCanvas.Controls)
+            /*foreach (Control c in pnlCanvas.Controls)
             {
                 if (c is SelectBlockControl sb)
                 {
@@ -94,7 +94,7 @@ namespace SmartBuilder_POC
                         textos.Add(sb.Bloco.Conteudo);
                     }
                 }
-            }
+            }*/
 
             txtSqlOut.Text = string.Join("\n", textos);
         }

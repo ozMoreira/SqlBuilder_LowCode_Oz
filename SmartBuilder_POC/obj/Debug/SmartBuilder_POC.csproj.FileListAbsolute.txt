@@ -21,3 +21,5 @@ C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuild
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.csproj.CopyComplete
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.exe
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.pdb
+C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\bin\Debug\MaterialSkin.dll
+C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\bin\Debug\FontAwesome.Sharp.dll
