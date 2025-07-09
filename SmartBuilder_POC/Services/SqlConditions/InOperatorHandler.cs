@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Drawing;
+﻿using System.Linq;
 
 namespace SmartBuilder_POC.Services.SqlConditions
 {
@@ -13,34 +11,16 @@ namespace SmartBuilder_POC.Services.SqlConditions
             OperatorSymbol = op;
         }
 
-        public IEnumerable<Control> CreateValueControls()
+        public string BuildSqlCondition(string field, params string[] values)
         {
-            var txt = new TextBox
-            {
-                Width = 150,
-                Text = "value1, value2, value3",
-                ForeColor = Color.Gray
-            };
+            if (values == null || values.Length == 0 || string.IsNullOrWhiteSpace(values[0]))
+                return string.Empty;
 
-            txt.GotFocus += (s, e) =>
-            {
-                if (txt.Text == "value1, value2, value3")
-                {
-                    txt.Text = "";
-                    txt.ForeColor = Color.Black;
-                }
-            };
+            var valueList = values[0]
+                .Split(',')
+                .Select(v => $"'{v.Trim()}'");
 
-            txt.LostFocus += (s, e) =>
-            {
-                if (string.IsNullOrWhiteSpace(txt.Text))
-                {
-                    txt.Text = "value1, value2, value3";
-                    txt.ForeColor = Color.Gray;
-                }
-            };
-
-            yield return txt;
+            return $"{field} {OperatorSymbol} ({string.Join(", ", valueList)})";
         }
     }
 }

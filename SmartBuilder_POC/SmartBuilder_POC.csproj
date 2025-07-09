@@ -93,14 +93,31 @@
     <Compile Include="Editors\SelectQueryBuilderForm.Designer.cs">
       <DependentUpon>SelectQueryBuilderForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\UI\ConditionPanelBuilder.cs" />
     <Compile Include="Infrastructure\TestDbFactory.cs" />
+    <Compile Include="Models\WhereConditions.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\ConditionBuilders\BetweenConditionUIBuilder.cs" />
+    <Compile Include="Services\ConditionBuilders\ConditionUIBuilderRegistry.cs" />
+    <Compile Include="Services\ConditionBuilders\EqualsConditionUIBuilder.cs" />
+    <Compile Include="Services\ConditionBuilders\IConditionUIBuilder.cs" />
+    <Compile Include="Services\ConditionBuilders\InConditionUIBuilder.cs" />
+    <Compile Include="Services\ConditionBuilders\LikeConditionUIBuilder.cs" />
+    <Compile Include="Services\ConditionBuilders\NullConditionUIBuilder.cs" />
+    <Compile Include="Services\ConditionBuilders\SimpleValueConditionUIBuilder.cs" />
     <Compile Include="Services\DatabaseExplorer.cs" />
     <Compile Include="Services\FormResizeUtility.cs" />
+    <Compile Include="Services\IDatabaseSchemaProvider.cs" />
+    <Compile Include="Services\SqlConditions\BetweenOperatorHandler.cs" />
+    <Compile Include="Services\SqlConditions\ConditionOperatorHandlerRegistry.cs" />
+    <Compile Include="Services\SqlConditions\IConditionOperatorHandler.cs" />
+    <Compile Include="Services\SqlConditions\InOperatorHandler.cs" />
+    <Compile Include="Services\SqlConditions\NullOperatorHandler.cs" />
+    <Compile Include="Services\SqlConditions\SimpleValueOperatorHandler.cs" />
     <Compile Include="Services\SqlQueryBuilderService.cs" />
     <Compile Include="SmartBuilder.cs">
       <SubType>Form</SubType>
@@ -165,9 +182,7 @@
   <ItemGroup>
     <None Include="Resources\copy %281%29.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows.Forms;
+﻿using System;
 
 namespace SmartBuilder_POC.Services.SqlConditions
 {
@@ -7,15 +6,21 @@ namespace SmartBuilder_POC.Services.SqlConditions
     {
         public string OperatorSymbol => "BETWEEN";
 
-        public IEnumerable<Control> CreateValueControls()
+        public string BuildSqlCondition(string field, params string[] values)
         {
-            return new Control[]
-            {
-                new Label { Text = "From", AutoSize = true },
-                new TextBox { Width = 60 },
-                new Label { Text = "to", AutoSize = true },
-                new TextBox { Width = 60 }
-            };
+            if (values == null || values.Length < 2)
+                return $"{field} BETWEEN ... AND ...";
+
+            string start = values[0];
+            string end = values[1];
+
+            return $"{field} BETWEEN {FormatValue(start)} AND {FormatValue(end)}";
+        }
+
+        private string FormatValue(string value)
+        {
+            // Aqui você pode expandir para tratar números, datas etc.
+            return $"'{value}'";
         }
     }
 }

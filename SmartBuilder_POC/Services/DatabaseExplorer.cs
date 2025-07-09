@@ -4,7 +4,7 @@ using System.Data.SQLite;
 
 namespace SmartBuilder_POC.Services
 {
-    public class DatabaseExplorer
+    public class DatabaseExplorer : IDatabaseSchemaProvider
     {
         private readonly string _connectionString;
 

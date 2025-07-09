@@ -49,7 +49,6 @@
             this.cmbTable.Name = "cmbTable";
             this.cmbTable.Size = new System.Drawing.Size(200, 31);
             this.cmbTable.TabIndex = 0;
-            this.cmbTable.SelectedIndexChanged += new System.EventHandler(this.cmbTable_SelectedIndexChanged);
             // 
             // clbFields
             // 

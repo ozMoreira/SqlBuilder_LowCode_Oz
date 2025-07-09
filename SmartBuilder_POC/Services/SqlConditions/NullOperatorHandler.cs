@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-
-namespace SmartBuilder_POC.Services.SqlConditions
+﻿namespace SmartBuilder_POC.Services.SqlConditions
 {
     public class NullOperatorHandler : IConditionOperatorHandler
     {
@@ -13,9 +9,9 @@ namespace SmartBuilder_POC.Services.SqlConditions
             OperatorSymbol = op;
         }
 
-        public IEnumerable<Control> CreateValueControls()
+        public string BuildSqlCondition(string field, params string[] values)
         {
-            return Enumerable.Empty<Control>();
+            return $"{field} {OperatorSymbol}";
         }
     }
 }

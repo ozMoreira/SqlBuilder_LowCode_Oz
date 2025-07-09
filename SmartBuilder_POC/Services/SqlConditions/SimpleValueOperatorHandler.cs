@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows.Forms;
-
-namespace SmartBuilder_POC.Services.SqlConditions
+﻿namespace SmartBuilder_POC.Services.SqlConditions
 {
     public class SimpleValueOperatorHandler : IConditionOperatorHandler
     {
@@ -12,9 +9,12 @@ namespace SmartBuilder_POC.Services.SqlConditions
             OperatorSymbol = op;
         }
 
-        public IEnumerable<Control> CreateValueControls()
+        public string BuildSqlCondition(string field, params string[] values)
         {
-            yield return new TextBox { Width = 100 };
+            if (values == null || values.Length == 0 || string.IsNullOrWhiteSpace(values[0]))
+                return string.Empty;
+
+            return $"{field} {OperatorSymbol} '{values[0]}'";
         }
     }
 }

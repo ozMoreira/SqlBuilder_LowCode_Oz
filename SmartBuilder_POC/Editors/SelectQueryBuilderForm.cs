@@ -10,7 +10,7 @@ namespace SmartBuilder_POC.Editors
 {
     public partial class SelectQueryBuilderForm : MaterialSkin.Controls.MaterialForm
     {
-        private readonly DatabaseExplorer _db;
+        private readonly IDatabaseSchemaProvider _db;
         private int minFormWidth;
 
         public SelectQueryBuilderForm(string connectionString)
@@ -30,7 +30,8 @@ namespace SmartBuilder_POC.Editors
                 Accent.LightBlue200,   // destaque (botões de check, foco, etc.)
                 TextShade.WHITE);
 
-            _db = new DatabaseExplorer(connectionString);
+            IDatabaseSchemaProvider schemaProvider = new DatabaseExplorer(connectionString);
+            _db = schemaProvider;
             btnAddTables_Click(null, EventArgs.Empty);
         }
 
@@ -51,24 +52,26 @@ namespace SmartBuilder_POC.Editors
             FormResizer.Adjust(this, pnlTables, tlpPrincipal, minFormWidth);
         }
 
-        
-        private void btnGenSql_Click(object sender, EventArgs e) {
-            var blocks = new List<SqlQueryBuilderService.TableBlock>();
 
-            foreach (Control c in pnlTables.Controls)
-            {
-                if (c is SelectedTableControl bloco &&
-                    !string.IsNullOrWhiteSpace(bloco.SelectedTable))
+        private void btnGenSql_Click(object sender, EventArgs e)
+        {
+            // 1) Monta a lista de blocks para o serviço
+            var blocks = pnlTables.Controls
+                .OfType<SelectedTableControl>()
+                .Where(c => !string.IsNullOrWhiteSpace(c.SelectedTable))
+                .Select(c => new SqlQueryBuilderService.TableBlock
                 {
-                    blocks.Add(new SqlQueryBuilderService.TableBlock
-                    {
-                        TableName = bloco.SelectedTable,
-                        SelectedFields = bloco.SelectedFields.ToList()
-                    });
-                }
-            }
+                    TableName = c.SelectedTable,
+                    SelectedFields = c.SelectedFields,
+                    WhereConditions = c.GetSqlConditions()  // usa o método que extrai as condições
+                })
+                .ToList();
 
-            txtSql.Text = SqlQueryBuilderService.GenerateSelectQuery(blocks);
+            // 2) Gera o SQL completo (SELECT + FROM + WHERE) no serviço
+            string sql = SqlQueryBuilderService.GenerateSelectQuery(blocks);
+
+            // 3) Exibe no TextBox
+            txtSql.Text = sql;
         }
 
         private void btnClear_Click(object sender, EventArgs e)

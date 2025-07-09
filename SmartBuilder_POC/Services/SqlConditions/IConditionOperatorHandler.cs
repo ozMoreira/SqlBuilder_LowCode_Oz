@@ -6,6 +6,6 @@ namespace SmartBuilder_POC.Services.SqlConditions
     public interface IConditionOperatorHandler
     {
         string OperatorSymbol { get; }
-        IEnumerable<Control> CreateValueControls();
+        string BuildSqlCondition(string field, params string[] values);
     }
 }
