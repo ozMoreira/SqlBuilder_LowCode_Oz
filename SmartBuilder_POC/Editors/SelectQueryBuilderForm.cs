@@ -55,23 +55,63 @@ namespace SmartBuilder_POC.Editors
 
         private void btnGenSql_Click(object sender, EventArgs e)
         {
-            // 1) Monta a lista de blocks para o serviço
-            var blocks = pnlTables.Controls
-                .OfType<SelectedTableControl>()
-                .Where(c => !string.IsNullOrWhiteSpace(c.SelectedTable))
-                .Select(c => new SqlQueryBuilderService.TableBlock
-                {
-                    TableName = c.SelectedTable,
-                    SelectedFields = c.SelectedFields,
-                    WhereConditions = c.GetSqlConditions()  // usa o método que extrai as condições
-                })
-                .ToList();
+            var tableControls = pnlTables.Controls
+        .OfType<SelectedTableControl>()
+        .Where(tc => !string.IsNullOrWhiteSpace(tc.SelectedTable))
+        .ToList();
 
-            // 2) Gera o SQL completo (SELECT + FROM + WHERE) no serviço
-            string sql = SqlQueryBuilderService.GenerateSelectQuery(blocks);
+            if (!tableControls.Any())
+            {
+                txtSql.Text = "-- Nenhuma tabela selecionada.";
+                return;
+            }
 
-            // 3) Exibe no TextBox
-            txtSql.Text = sql;
+            // 1) SELECT + FROM com aliases
+            var selectFields = new List<string>();
+            var aliasMap = new Dictionary<string, string>();
+            char alias = 'A';
+
+            foreach (var tc in tableControls)
+            {
+                if (!aliasMap.ContainsKey(tc.SelectedTable))
+                    aliasMap[tc.SelectedTable] = alias++.ToString();
+
+                var a = aliasMap[tc.SelectedTable];
+                foreach (var f in tc.SelectedFields)
+                    selectFields.Add($"{a}.{f}");
+            }
+
+            if (selectFields.Count == 0)
+            {
+                txtSql.Text = "-- Nenhum campo selecionado.";
+                return;
+            }
+
+            string selectClause = $"SELECT {string.Join(", ", selectFields)} ";
+            string fromClause = "FROM " +
+                string.Join(", ", aliasMap.Select(kv => $"{kv.Key} {kv.Value}")) +
+                " ";
+
+            // 2) WHERE — cada bloco com AND/OR interno preservado
+            var whereBlocks = new List<string>();
+            foreach (var tc in tableControls)
+            {
+                var a = aliasMap[tc.SelectedTable];
+                var block = tc.BuildWhereClause(a)?.Trim();
+                if (!string.IsNullOrWhiteSpace(block))
+                    whereBlocks.Add($"({block})");  // opcional: parênteses para cada tabela
+            }
+
+            string whereClause = whereBlocks.Any()
+                ? "WHERE " + string.Join(" AND ", whereBlocks)
+                : "";
+
+            // 3) Monta o SQL final
+            txtSql.Text = $"{selectClause}\n{fromClause}"
+                        + (string.IsNullOrEmpty(whereClause)
+                            ? ""
+                            : "\n" + whereClause);
+
         }
 
         private void btnClear_Click(object sender, EventArgs e)

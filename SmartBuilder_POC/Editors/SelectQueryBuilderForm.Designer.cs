@@ -97,7 +97,7 @@
             this.tlpPrincipal.RowCount = 2;
             this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 53F));
             this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 518F));
-            this.tlpPrincipal.Size = new System.Drawing.Size(954, 574);
+            this.tlpPrincipal.Size = new System.Drawing.Size(954, 618);
             this.tlpPrincipal.TabIndex = 5;
             // 
             // pnlTables
@@ -109,7 +109,7 @@
             this.pnlTables.Location = new System.Drawing.Point(10, 63);
             this.pnlTables.Margin = new System.Windows.Forms.Padding(10);
             this.pnlTables.Name = "pnlTables";
-            this.pnlTables.Size = new System.Drawing.Size(481, 501);
+            this.pnlTables.Size = new System.Drawing.Size(481, 545);
             this.pnlTables.TabIndex = 5;
             // 
             // txtSql
@@ -123,7 +123,7 @@
             this.txtSql.Name = "txtSql";
             this.txtSql.ReadOnly = true;
             this.txtSql.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtSql.Size = new System.Drawing.Size(433, 501);
+            this.txtSql.Size = new System.Drawing.Size(433, 545);
             this.txtSql.TabIndex = 3;
             // 
             // tableLayoutPanel2
@@ -192,7 +192,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.ClientSize = new System.Drawing.Size(962, 649);
+            this.ClientSize = new System.Drawing.Size(962, 693);
             this.Controls.Add(this.tlpPrincipal);
             this.ForeColor = System.Drawing.Color.SlateGray;
             this.Name = "SelectQueryBuilderForm";

@@ -36,7 +36,6 @@
             this.lblTable = new System.Windows.Forms.Label();
             this.pnlWhereConditions = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAddCondition = new FontAwesome.Sharp.IconButton();
-            this.pnlWhereConditions.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmbTable
@@ -47,7 +46,7 @@
             this.cmbTable.FormattingEnabled = true;
             this.cmbTable.Location = new System.Drawing.Point(22, 44);
             this.cmbTable.Name = "cmbTable";
-            this.cmbTable.Size = new System.Drawing.Size(200, 31);
+            this.cmbTable.Size = new System.Drawing.Size(402, 31);
             this.cmbTable.TabIndex = 0;
             // 
             // clbFields
@@ -57,17 +56,18 @@
             this.clbFields.FormattingEnabled = true;
             this.clbFields.Location = new System.Drawing.Point(23, 120);
             this.clbFields.Name = "clbFields";
-            this.clbFields.Size = new System.Drawing.Size(199, 254);
+            this.clbFields.Size = new System.Drawing.Size(199, 404);
             this.clbFields.TabIndex = 1;
             // 
             // btnRemove
             // 
             this.btnRemove.Image = global::SmartBuilder_POC.Properties.Resources.delete;
-            this.btnRemove.Location = new System.Drawing.Point(22, 483);
+            this.btnRemove.Location = new System.Drawing.Point(335, 120);
             this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(200, 64);
+            this.btnRemove.Size = new System.Drawing.Size(89, 55);
             this.btnRemove.TabIndex = 2;
             this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
             // lblFields
             // 
@@ -91,10 +91,10 @@
             // 
             // pnlWhereConditions
             // 
-            this.pnlWhereConditions.Controls.Add(this.btnAddCondition);
-            this.pnlWhereConditions.Location = new System.Drawing.Point(23, 380);
+            this.pnlWhereConditions.AutoScroll = true;
+            this.pnlWhereConditions.Location = new System.Drawing.Point(240, 181);
             this.pnlWhereConditions.Name = "pnlWhereConditions";
-            this.pnlWhereConditions.Size = new System.Drawing.Size(200, 100);
+            this.pnlWhereConditions.Size = new System.Drawing.Size(184, 343);
             this.pnlWhereConditions.TabIndex = 5;
             // 
             // btnAddCondition
@@ -103,17 +103,17 @@
             this.btnAddCondition.IconColor = System.Drawing.Color.Black;
             this.btnAddCondition.IconSize = 32;
             this.btnAddCondition.Image = ((System.Drawing.Image)(resources.GetObject("btnAddCondition.Image")));
-            this.btnAddCondition.Location = new System.Drawing.Point(3, 3);
+            this.btnAddCondition.Location = new System.Drawing.Point(240, 120);
             this.btnAddCondition.Name = "btnAddCondition";
-            this.btnAddCondition.Size = new System.Drawing.Size(196, 55);
-            this.btnAddCondition.TabIndex = 0;
+            this.btnAddCondition.Size = new System.Drawing.Size(89, 55);
+            this.btnAddCondition.TabIndex = 6;
             this.btnAddCondition.UseVisualStyleBackColor = true;
-            this.btnAddCondition.Click += new System.EventHandler(this.btnAddCondition_Click);
             // 
             // SelectedTableControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.btnAddCondition);
             this.Controls.Add(this.pnlWhereConditions);
             this.Controls.Add(this.lblTable);
             this.Controls.Add(this.lblFields);
@@ -121,8 +121,7 @@
             this.Controls.Add(this.clbFields);
             this.Controls.Add(this.cmbTable);
             this.Name = "SelectedTableControl";
-            this.Size = new System.Drawing.Size(523, 550);
-            this.pnlWhereConditions.ResumeLayout(false);
+            this.Size = new System.Drawing.Size(435, 544);
             this.ResumeLayout(false);
             this.PerformLayout();
 
