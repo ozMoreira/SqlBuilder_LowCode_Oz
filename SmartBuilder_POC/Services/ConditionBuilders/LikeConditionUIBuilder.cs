@@ -7,7 +7,7 @@ namespace SmartBuilder_POC.Services.ConditionBuilders
     {
         public IEnumerable<Control> Build()
         {
-            yield return new TextBox { Width = 120 };
+            yield return new TextBox { Width = 150 };
         }
     }
 }

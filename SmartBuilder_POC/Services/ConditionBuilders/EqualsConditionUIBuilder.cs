@@ -9,7 +9,7 @@ namespace SmartBuilder_POC.Services.ConditionBuilders
         {
             return new Control[]
             {
-                new TextBox { Width = 100 }
+                new TextBox { Width = 150 }
             };
         }
     }

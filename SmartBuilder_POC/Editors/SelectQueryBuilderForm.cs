@@ -1,6 +1,7 @@
 ﻿using MaterialSkin;
 using SmartBuilder_POC.Controls;
 using SmartBuilder_POC.Services;
+using SmartBuilder_POC.Services.SqlConditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,10 +56,11 @@ namespace SmartBuilder_POC.Editors
 
         private void btnGenSql_Click(object sender, EventArgs e)
         {
+            // 1) Reúna todos os SelectedTableControl
             var tableControls = pnlTables.Controls
-        .OfType<SelectedTableControl>()
-        .Where(tc => !string.IsNullOrWhiteSpace(tc.SelectedTable))
-        .ToList();
+                .OfType<SelectedTableControl>()
+                .Where(tc => !string.IsNullOrWhiteSpace(tc.SelectedTable))
+                .ToList();
 
             if (!tableControls.Any())
             {
@@ -66,53 +68,49 @@ namespace SmartBuilder_POC.Editors
                 return;
             }
 
-            // 1) SELECT + FROM com aliases
-            var selectFields = new List<string>();
+            // 2) Gere aliases (A, B, C…) para cada tabela
             var aliasMap = new Dictionary<string, string>();
-            char alias = 'A';
-
+            char nextAlias = 'A';
             foreach (var tc in tableControls)
-            {
                 if (!aliasMap.ContainsKey(tc.SelectedTable))
-                    aliasMap[tc.SelectedTable] = alias++.ToString();
+                    aliasMap[tc.SelectedTable] = (nextAlias++).ToString();
 
-                var a = aliasMap[tc.SelectedTable];
-                foreach (var f in tc.SelectedFields)
-                    selectFields.Add($"{a}.{f}");
-            }
+            // 3) Monte o SELECT (campos em MAIÚSCULO)
+            var selectFields = tableControls
+                .SelectMany(tc =>
+                    tc.SelectedFields
+                      .Select(f => $"{aliasMap[tc.SelectedTable]}.{f.ToUpper()}")
+                )
+                .ToList();
 
-            if (selectFields.Count == 0)
+            if (!selectFields.Any())
             {
                 txtSql.Text = "-- Nenhum campo selecionado.";
                 return;
             }
 
-            string selectClause = $"SELECT {string.Join(", ", selectFields)} ";
+            string selectClause = $"SELECT {string.Join(", ", selectFields)}";
             string fromClause = "FROM " +
-                string.Join(", ", aliasMap.Select(kv => $"{kv.Key} {kv.Value}")) +
-                " ";
+                string.Join(", ",
+                    aliasMap.Select(kv => $"{kv.Key} {kv.Value}")
+                );
 
-            // 2) WHERE — cada bloco com AND/OR interno preservado
-            var whereBlocks = new List<string>();
-            foreach (var tc in tableControls)
-            {
-                var a = aliasMap[tc.SelectedTable];
-                var block = tc.BuildWhereClause(a)?.Trim();
-                if (!string.IsNullOrWhiteSpace(block))
-                    whereBlocks.Add($"({block})");  // opcional: parênteses para cada tabela
-            }
+            // 4) Monte o WHERE chamando o BuildWhereClause de cada controle
+            var whereParts = tableControls
+                .Select(tc => tc.BuildWhereClause(aliasMap[tc.SelectedTable]).Trim())
+                .Where(w => !string.IsNullOrWhiteSpace(w))
+                .ToList();
 
-            string whereClause = whereBlocks.Any()
-                ? "WHERE " + string.Join(" AND ", whereBlocks)
+            string whereClause = whereParts.Any()
+                ? "WHERE " + string.Join(" AND ", whereParts)
                 : "";
 
-            // 3) Monta o SQL final
-            txtSql.Text = $"{selectClause}\n{fromClause}"
-                        + (string.IsNullOrEmpty(whereClause)
-                            ? ""
-                            : "\n" + whereClause);
-
+            // 5) Exiba tudo junto
+            txtSql.Text = selectClause
+                        + "\n" + fromClause
+                        + (string.IsNullOrEmpty(whereClause) ? "" : "\n" + whereClause);
         }
+
 
         private void btnClear_Click(object sender, EventArgs e)
         {

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace SmartBuilder_POC.Controls
@@ -73,26 +73,29 @@ namespace SmartBuilder_POC.Controls
             AddConditionPanel();
         }
 
-        private void AddConditionPanel()
+        private void AddConditionPanel(string logic = null)
         {
             var panel = ConditionPanelBuilder.Create(
                 AvailableFields,
                 pnl => pnlWhereConditions.Controls.Remove(pnl),  // remove
-                () => AddConditionPanel()                        // onAddNext: reentra aqui
-            );
+                op => AddConditionPanel(op));
+
+            // Se vier lógica no primeiro bloco, guarda no Tag
+            if (!string.IsNullOrEmpty(logic))
+                panel.Tag = logic;
+
             pnlWhereConditions.Controls.Add(panel);
         }
         public string BuildWhereClause(string alias)
         {
             var parts = new List<string>();
-            bool isFirst = true;
+            bool first = true;
 
             foreach (FlowLayoutPanel panel in pnlWhereConditions.Controls.OfType<FlowLayoutPanel>())
             {
-                // 0 = lógica, 1 = campo, 2 = operador, 3+ = TextBoxes
-                var cmbLogic = panel.Controls.OfType<ComboBox>().ElementAt(0);
-                var cmbField = panel.Controls.OfType<ComboBox>().ElementAt(1);
-                var cmbOperator = panel.Controls.OfType<ComboBox>().ElementAt(2);
+                var cmbField = panel.Controls.OfType<ComboBox>().First(c => (string)c.Tag == "field");
+                var cmbOperator = panel.Controls.OfType<ComboBox>().First(c => (string)c.Tag == "operator");
+                var logicTag = panel.Tag as string;
 
                 string field = cmbField.SelectedItem?.ToString();
                 string op = cmbOperator.SelectedItem?.ToString();
@@ -101,41 +104,39 @@ namespace SmartBuilder_POC.Controls
 
                 var values = panel.Controls
                                   .OfType<TextBox>()
-                                  .Select(txt => txt.Text.Trim())
-                                  .Where(txt => !string.IsNullOrEmpty(txt))
+                                  .Select(t => t.Text.Trim())
+                                  .Where(t => t != "")
                                   .ToArray();
 
                 if (!ConditionOperatorHandlerRegistry.TryGetHandler(op, out var handler))
                     continue;
 
-                // Gera algo como "field BETWEEN 1 AND 10"
+                // gera, por exemplo, "ID_AUTOR = '1'"
                 string raw = handler.BuildSqlCondition(field, values).Trim();
 
-                // Prefixa o alias no começo de cada cláusula
-                // Ex: "A.field BETWEEN 1 AND 10"
-                string aliased = raw.StartsWith(field + ".")
-                    ? raw
-                    : raw.Replace(field, $"{alias}.{field}");
+                // prefixa todas as ocorrências de "FIELD" por "A.FIELD"
+                string pattern = $@"\b{Regex.Escape(field.ToUpper())}\b";
+                string replacement = $"{alias}.{field.ToUpper()}";
+                // uppercase geral
+                raw = raw.ToUpper();
+                string aliased = Regex.Replace(raw, pattern, replacement);
 
-                // Primeiro sem lógica, depois com AND/OR
-                if (isFirst)
+                if (first)
                 {
                     parts.Add(aliased);
-                    isFirst = false;
+                    first = false;
                 }
                 else
                 {
-                    parts.Add($"{cmbLogic.SelectedItem} {aliased}");
+                    // injeta AND/OR antes da condição
+                    string logic = (logicTag ?? "AND").ToUpper();
+                    parts.Add($"{logic} {aliased}");
                 }
             }
 
-            // Junta tudo num único bloco:
-            // Ex: "A.x = 1 OR A.y > 2 AND A.z IS NULL"
+            // retorna algo como "A.ID_AUTOR = '1' AND A.NM_AUTOR = '3' OR A.ID_AUTOR = '4'"
             return string.Join(" ", parts);
         }
-        private void btnRemove_Click(object sender, EventArgs e)
-        {
 
-        }
     }
 }

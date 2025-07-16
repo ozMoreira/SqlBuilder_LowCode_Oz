@@ -62,12 +62,11 @@
             // btnRemove
             // 
             this.btnRemove.Image = global::SmartBuilder_POC.Properties.Resources.delete;
-            this.btnRemove.Location = new System.Drawing.Point(335, 120);
+            this.btnRemove.Location = new System.Drawing.Point(380, 120);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(89, 55);
             this.btnRemove.TabIndex = 2;
             this.btnRemove.UseVisualStyleBackColor = true;
-            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
             // lblFields
             // 
@@ -92,9 +91,11 @@
             // pnlWhereConditions
             // 
             this.pnlWhereConditions.AutoScroll = true;
+            this.pnlWhereConditions.BackColor = System.Drawing.SystemColors.Info;
+            this.pnlWhereConditions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pnlWhereConditions.Location = new System.Drawing.Point(240, 181);
             this.pnlWhereConditions.Name = "pnlWhereConditions";
-            this.pnlWhereConditions.Size = new System.Drawing.Size(184, 343);
+            this.pnlWhereConditions.Size = new System.Drawing.Size(229, 343);
             this.pnlWhereConditions.TabIndex = 5;
             // 
             // btnAddCondition
@@ -121,7 +122,7 @@
             this.Controls.Add(this.clbFields);
             this.Controls.Add(this.cmbTable);
             this.Name = "SelectedTableControl";
-            this.Size = new System.Drawing.Size(435, 544);
+            this.Size = new System.Drawing.Size(489, 544);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -134,7 +135,7 @@
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Label lblFields;
         private System.Windows.Forms.Label lblTable;
-        private System.Windows.Forms.FlowLayoutPanel pnlWhereConditions;
         private FontAwesome.Sharp.IconButton btnAddCondition;
+        public System.Windows.Forms.FlowLayoutPanel pnlWhereConditions;
     }
 }

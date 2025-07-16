@@ -20,7 +20,7 @@ namespace SmartBuilder_POC.Services
             using (var conn = new SQLiteConnection(_connectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE 'TB_%'", conn))
+                using (var cmd = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE 'TB%'", conn))
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
