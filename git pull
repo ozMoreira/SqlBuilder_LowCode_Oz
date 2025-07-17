@@ -1,0 +1,41 @@
+[33mcommit 09759e9b3fc139bf3157b103c65ae245650b02d1[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: oswaldo.g.moreira <oswaldo.g.moreira@accenture.com>
+Date:   Wed Jul 16 17:03:26 2025 -0300
+
+    clausula where, and e or funcionais
+
+[33mcommit b0b2f76f637b43d8d5cadc19e9716d3c670b5eb9[m
+Author: oswaldo.g.moreira <oswaldo.g.moreira@accenture.com>
+Date:   Wed Jul 9 21:52:04 2025 -0300
+
+    adicionado operadores logicos AND e OR
+
+[33mcommit da23c71b32aeff37ca08c6b370de5cd4727a5a3f[m
+Author: oswaldo.g.moreira <oswaldo.g.moreira@accenture.com>
+Date:   Wed Jul 9 20:29:03 2025 -0300
+
+    principíos SOLID aplicados
+
+[33mcommit c054409613a9190c5b6aaf19d5fc66bd4148e173[m
+Author: oswaldo.g.moreira <oswaldo.g.moreira@accenture.com>
+Date:   Wed Jul 9 17:58:37 2025 -0300
+
+    adicionado responsividade de form vertical e horizontal e iniciando clausulas condicionais
+
+[33mcommit 8a9783a32a0fda9ca45b5655e7a2dfae40ad0d1b[m
+Author: oswaldo.g.moreira <oswaldo.g.moreira@accenture.com>
+Date:   Wed Jul 9 11:47:41 2025 -0300
+
+    select com multiplas tabels inicial
+
+[33mcommit 13eb3857530bf24c9a7921eb791714f5f1c71324[m
+Author: oswaldo.g.moreira <oswaldo.g.moreira@accenture.com>
+Date:   Wed Jul 9 10:20:33 2025 -0300
+
+    adicionando Controle de Seleção de Tabelas
+
+[33mcommit 2bb643470e364051f8f91b602b49431f863a0de3[m
+Author: oswaldo.g.moreira <oswaldo.g.moreira@accenture.com>
+Date:   Wed Jul 9 09:45:26 2025 -0300
+
+    projeto inicial
