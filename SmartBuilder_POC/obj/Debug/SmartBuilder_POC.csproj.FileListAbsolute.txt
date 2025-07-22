@@ -23,3 +23,5 @@ C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuild
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.pdb
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\bin\Debug\MaterialSkin.dll
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\bin\Debug\FontAwesome.Sharp.dll
+C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Controls.JoinBlockControl.resources
+C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Editors.FrmJoin.resources

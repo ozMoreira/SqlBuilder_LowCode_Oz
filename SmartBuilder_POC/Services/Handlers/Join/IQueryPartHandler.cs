@@ -3,7 +3,6 @@
 namespace SmartBuilder_POC.Services.SqlConditions
 {
     public interface IQueryPartHandler
-    public interface IQueryPartHandler
     {
         /// <summary>
         /// Informa se este handler sabe gerar SQL para o bloco recebido.

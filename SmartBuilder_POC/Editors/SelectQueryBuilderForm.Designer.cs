@@ -38,6 +38,7 @@
             this.btnCopy = new FontAwesome.Sharp.IconButton();
             this.btnClear = new FontAwesome.Sharp.IconButton();
             this.btnGenSql = new FontAwesome.Sharp.IconButton();
+            this.btnJoin = new MaterialSkin.Controls.MaterialFlatButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.tlpPrincipal.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -47,14 +48,16 @@
             // 
             this.tableLayoutPanel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.36223F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.63777F));
-            this.tableLayoutPanel1.Controls.Add(this.btnAddTables, 1, 0);
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.93798F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.06202F));
+            this.tableLayoutPanel1.Controls.Add(this.btnJoin, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnAddTables, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(387, 47);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(495, 47);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // btnAddTables
@@ -64,14 +67,13 @@
             this.btnAddTables.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(71)))), ((int)(((byte)(79)))));
             this.btnAddTables.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAddTables.Depth = 0;
-            this.btnAddTables.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnAddTables.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddTables.Location = new System.Drawing.Point(92, 10);
+            this.btnAddTables.Location = new System.Drawing.Point(10, 10);
             this.btnAddTables.Margin = new System.Windows.Forms.Padding(10);
             this.btnAddTables.MouseState = MaterialSkin.MouseState.HOVER;
             this.btnAddTables.Name = "btnAddTables";
             this.btnAddTables.Primary = false;
-            this.btnAddTables.Size = new System.Drawing.Size(285, 27);
+            this.btnAddTables.Size = new System.Drawing.Size(184, 27);
             this.btnAddTables.TabIndex = 3;
             this.btnAddTables.Text = "+ Adicionar Tabela";
             this.btnAddTables.UseVisualStyleBackColor = false;
@@ -187,6 +189,24 @@
             this.btnGenSql.UseVisualStyleBackColor = true;
             this.btnGenSql.Click += new System.EventHandler(this.btnGenSql_Click);
             // 
+            // btnJoin
+            // 
+            this.btnJoin.AutoSize = true;
+            this.btnJoin.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnJoin.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(71)))), ((int)(((byte)(79)))));
+            this.btnJoin.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnJoin.Depth = 0;
+            this.btnJoin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnJoin.Location = new System.Drawing.Point(267, 10);
+            this.btnJoin.Margin = new System.Windows.Forms.Padding(10);
+            this.btnJoin.MouseState = MaterialSkin.MouseState.HOVER;
+            this.btnJoin.Name = "btnJoin";
+            this.btnJoin.Primary = false;
+            this.btnJoin.Size = new System.Drawing.Size(171, 27);
+            this.btnJoin.TabIndex = 4;
+            this.btnJoin.Text = "X Cruzar Tabelas";
+            this.btnJoin.UseVisualStyleBackColor = false;
+            // 
             // SelectQueryBuilderForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -218,5 +238,6 @@
         private FontAwesome.Sharp.IconButton btnGenSql;
         private FontAwesome.Sharp.IconButton btnCopy;
         private FontAwesome.Sharp.IconButton btnClear;
+        private MaterialSkin.Controls.MaterialFlatButton btnJoin;
     }
 }

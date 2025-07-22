@@ -75,6 +75,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\JoinBlockControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\JoinBlockControl.Designer.cs">
+      <DependentUpon>JoinBlockControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SelectBlockControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -87,6 +93,12 @@
     <Compile Include="Controls\SelectedTableControl.Designer.cs">
       <DependentUpon>SelectedTableControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Editors\Material.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\Material.Designer.cs">
+      <DependentUpon>Material.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editors\SelectQueryBuilderForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +107,8 @@
     </Compile>
     <Compile Include="Helpers\UI\ConditionPanelBuilder.cs" />
     <Compile Include="Infrastructure\TestDbFactory.cs" />
+    <Compile Include="Models\JoinBlock.cs" />
+    <Compile Include="Models\SqlBlock.cs" />
     <Compile Include="Models\WhereConditions.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -111,13 +125,16 @@
     <Compile Include="Services\ConditionBuilders\SimpleValueConditionUIBuilder.cs" />
     <Compile Include="Services\DatabaseExplorer.cs" />
     <Compile Include="Services\FormResizeUtility.cs" />
+    <Compile Include="Services\Handlers\Registry\QueryPartHandlerRegistry.cs" />
     <Compile Include="Services\IDatabaseSchemaProvider.cs" />
-    <Compile Include="Services\SqlConditions\BetweenOperatorHandler.cs" />
-    <Compile Include="Services\SqlConditions\ConditionOperatorHandlerRegistry.cs" />
-    <Compile Include="Services\SqlConditions\IConditionOperatorHandler.cs" />
-    <Compile Include="Services\SqlConditions\InOperatorHandler.cs" />
-    <Compile Include="Services\SqlConditions\NullOperatorHandler.cs" />
-    <Compile Include="Services\SqlConditions\SimpleValueOperatorHandler.cs" />
+    <Compile Include="Services\Handlers\Conditions\BetweenOperatorHandler.cs" />
+    <Compile Include="Services\Handlers\Conditions\ConditionOperatorHandlerRegistry.cs" />
+    <Compile Include="Services\Handlers\Conditions\IConditionOperatorHandler.cs" />
+    <Compile Include="Services\Handlers\Conditions\InOperatorHandler.cs" />
+    <Compile Include="Services\Handlers\Join\IQueryPartHandler.cs" />
+    <Compile Include="Services\Handlers\Join\JoinBlockHandler.cs" />
+    <Compile Include="Services\Handlers\Conditions\NullOperatorHandler.cs" />
+    <Compile Include="Services\Handlers\Conditions\SimpleValueOperatorHandler.cs" />
     <Compile Include="Services\SqlQueryBuilderService.cs" />
     <Compile Include="SmartBuilder.cs">
       <SubType>Form</SubType>
@@ -127,11 +144,17 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\JoinBlockControl.resx">
+      <DependentUpon>JoinBlockControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\SelectBlockControl.resx">
       <DependentUpon>SelectBlockControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\SelectedTableControl.resx">
       <DependentUpon>SelectedTableControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\Material.resx">
+      <DependentUpon>Material.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Editors\SelectQueryBuilderForm.resx">
       <DependentUpon>SelectQueryBuilderForm.cs</DependentUpon>
