@@ -28,11 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VisualSqlBuilderForm));
             this.pnlPallete = new System.Windows.Forms.Panel();
             this.pnlCanvas = new System.Windows.Forms.Panel();
             this.btnGenerateSql = new MaterialSkin.Controls.MaterialFlatButton();
             this.cmbTabelas = new System.Windows.Forms.ComboBox();
             this.lblTabelas = new MaterialSkin.Controls.MaterialLabel();
+            this.lstCampos = new System.Windows.Forms.ListBox();
+            this.btnLimparCanvas = new FontAwesome.Sharp.IconButton();
             this.SuspendLayout();
             // 
             // pnlPallete
@@ -41,9 +44,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlPallete.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlPallete.Location = new System.Drawing.Point(0, 141);
+            this.pnlPallete.Location = new System.Drawing.Point(12, 337);
             this.pnlPallete.Name = "pnlPallete";
-            this.pnlPallete.Size = new System.Drawing.Size(264, 451);
+            this.pnlPallete.Size = new System.Drawing.Size(430, 401);
             this.pnlPallete.TabIndex = 0;
             this.pnlPallete.DragDrop += new System.Windows.Forms.DragEventHandler(this.PnlCanvas_DragDrop);
             this.pnlPallete.DragEnter += new System.Windows.Forms.DragEventHandler(this.PnlCanvas_DragEnter);
@@ -55,9 +58,9 @@
             this.pnlCanvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlCanvas.Location = new System.Drawing.Point(270, 84);
+            this.pnlCanvas.Location = new System.Drawing.Point(448, 111);
             this.pnlCanvas.Name = "pnlCanvas";
-            this.pnlCanvas.Size = new System.Drawing.Size(993, 508);
+            this.pnlCanvas.Size = new System.Drawing.Size(1014, 627);
             this.pnlCanvas.TabIndex = 1;
             // 
             // btnGenerateSql
@@ -66,12 +69,12 @@
             this.btnGenerateSql.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnGenerateSql.Depth = 0;
             this.btnGenerateSql.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btnGenerateSql.Location = new System.Drawing.Point(0, 601);
+            this.btnGenerateSql.Location = new System.Drawing.Point(0, 747);
             this.btnGenerateSql.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.btnGenerateSql.MouseState = MaterialSkin.MouseState.HOVER;
             this.btnGenerateSql.Name = "btnGenerateSql";
             this.btnGenerateSql.Primary = false;
-            this.btnGenerateSql.Size = new System.Drawing.Size(1263, 36);
+            this.btnGenerateSql.Size = new System.Drawing.Size(1462, 36);
             this.btnGenerateSql.TabIndex = 2;
             this.btnGenerateSql.Text = "GERAR SQL";
             this.btnGenerateSql.UseVisualStyleBackColor = true;
@@ -86,10 +89,11 @@
             this.cmbTabelas.FormattingEnabled = true;
             this.cmbTabelas.IntegralHeight = false;
             this.cmbTabelas.ItemHeight = 16;
-            this.cmbTabelas.Location = new System.Drawing.Point(12, 111);
+            this.cmbTabelas.Location = new System.Drawing.Point(12, 126);
             this.cmbTabelas.Name = "cmbTabelas";
-            this.cmbTabelas.Size = new System.Drawing.Size(231, 24);
+            this.cmbTabelas.Size = new System.Drawing.Size(430, 24);
             this.cmbTabelas.TabIndex = 3;
+            this.cmbTabelas.SelectedIndexChanged += new System.EventHandler(this.cmbTabelas_SelectedIndexChanged);
             // 
             // lblTabelas
             // 
@@ -101,18 +105,42 @@
             this.lblTabelas.Depth = 0;
             this.lblTabelas.Font = new System.Drawing.Font("Roboto", 11F);
             this.lblTabelas.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.lblTabelas.Location = new System.Drawing.Point(34, 84);
+            this.lblTabelas.Location = new System.Drawing.Point(34, 87);
             this.lblTabelas.MouseState = MaterialSkin.MouseState.HOVER;
             this.lblTabelas.Name = "lblTabelas";
-            this.lblTabelas.Size = new System.Drawing.Size(191, 24);
+            this.lblTabelas.Size = new System.Drawing.Size(180, 24);
             this.lblTabelas.TabIndex = 4;
-            this.lblTabelas.Text = "Tabelas Disponpíveis";
+            this.lblTabelas.Text = "Tabelas Disponíveis";
+            // 
+            // lstCampos
+            // 
+            this.lstCampos.FormattingEnabled = true;
+            this.lstCampos.ItemHeight = 16;
+            this.lstCampos.Location = new System.Drawing.Point(12, 153);
+            this.lstCampos.Name = "lstCampos";
+            this.lstCampos.Size = new System.Drawing.Size(430, 180);
+            this.lstCampos.TabIndex = 5;
+            this.lstCampos.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lstCampos_MouseDown);
+            // 
+            // btnLimparCanvas
+            // 
+            this.btnLimparCanvas.Icon = FontAwesome.Sharp.IconChar.Magic;
+            this.btnLimparCanvas.IconColor = System.Drawing.Color.Black;
+            this.btnLimparCanvas.IconSize = 32;
+            this.btnLimparCanvas.Image = ((System.Drawing.Image)(resources.GetObject("btnLimparCanvas.Image")));
+            this.btnLimparCanvas.Location = new System.Drawing.Point(1398, 79);
+            this.btnLimparCanvas.Name = "btnLimparCanvas";
+            this.btnLimparCanvas.Size = new System.Drawing.Size(52, 42);
+            this.btnLimparCanvas.TabIndex = 6;
+            this.btnLimparCanvas.UseVisualStyleBackColor = true;
             // 
             // VisualSqlBuilderForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1263, 637);
+            this.ClientSize = new System.Drawing.Size(1462, 783);
+            this.Controls.Add(this.btnLimparCanvas);
+            this.Controls.Add(this.lstCampos);
             this.Controls.Add(this.lblTabelas);
             this.Controls.Add(this.cmbTabelas);
             this.Controls.Add(this.btnGenerateSql);
@@ -132,5 +160,7 @@
         private MaterialSkin.Controls.MaterialFlatButton btnGenerateSql;
         private System.Windows.Forms.ComboBox cmbTabelas;
         private MaterialSkin.Controls.MaterialLabel lblTabelas;
+        private System.Windows.Forms.ListBox lstCampos;
+        private FontAwesome.Sharp.IconButton btnLimparCanvas;
     }
 }

@@ -2,7 +2,10 @@
 using SmartBuilder_POC.Controls;
 using SmartBuilder_POC.Services;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Net.NetworkInformation;
 using System.Windows.Forms;
 
 namespace SmartBuilder_POC.Forms
@@ -10,6 +13,21 @@ namespace SmartBuilder_POC.Forms
     public partial class VisualSqlBuilderForm : MaterialSkin.Controls.MaterialForm
     {
         private readonly IDatabaseSchemaProvider _db;
+        private readonly Dictionary<string, string> _tableAliases = new Dictionary<string, string>();
+        private char _nextAlias = 'a';
+        private readonly Dictionary<string, Color> _tableColors = new Dictionary<string, Color>();
+        private int _nextColorIndex = 0;
+        private readonly Color[] _palette = new Color[]
+            {
+                Color.LightSkyBlue,
+                Color.LightGreen,
+                Color.LightSalmon,
+                Color.LightPink,
+                Color.Khaki,
+                Color.LightSteelBlue,
+                Color.Plum,
+                Color.PeachPuff,
+            };
 
         public string SelectedTable => cmbTabelas.SelectedItem?.ToString();
         public VisualSqlBuilderForm(string connectionString)
@@ -28,13 +46,13 @@ namespace SmartBuilder_POC.Forms
                 Primary.BlueGrey500,   // claro (opcional)
                 Accent.LightBlue200,   // destaque (botões de check, foco, etc.)
                 TextShade.WHITE);
-
+            btnLimparCanvas.Text = "\uf51a";
             pnlCanvas.AllowDrop = true;
             LoadPalette();
             CarregarTabelas();
             pnlCanvas.DragEnter += PnlCanvas_DragEnter;
             pnlCanvas.DragDrop += PnlCanvas_DragDrop;
-
+            btnLimparCanvas.Click += btnLimparCanvas_Click;
         }
 
         private void LoadPalette()
@@ -73,63 +91,54 @@ namespace SmartBuilder_POC.Forms
 
         private void PnlCanvas_DragDrop(object sender, DragEventArgs e)
         {
-            string tipo = e.Data.GetData(DataFormats.Text)?.ToString();
-            if (tipo == "SELECT")
+            string campo = e.Data.GetData(DataFormats.Text)?.ToString();
+            var tabela = SelectedTable;
+            if (!string.IsNullOrEmpty(campo) && !string.IsNullOrEmpty(tabela))
             {
-                var block = new SelectBlockControl();
+                string alias = GetAliasForTable(tabela);
+                Color color = GetColorForTable(tabela);
+                var blocoCampo = new FieldBlockControl(campo, alias, color);
                 Point pt = pnlCanvas.PointToClient(new Point(e.X, e.Y));
-                block.Location = pt;
-                pnlCanvas.Controls.Add(block);
+                blocoCampo.Location = pt;
+                blocoCampo.EnableMove();
+                pnlCanvas.Controls.Add(blocoCampo);
 
-                block.EnableMove();
-
-                // Remove com botão direito
-                block.MouseUp += (s2, e2) =>
-                {
-                    if (e2.Button == MouseButtons.Right)
-                    {
-                        pnlCanvas.Controls.Remove(block);
-                        block.Dispose();
-                    }
-                };
-                // Remove com botão direito na label também
-                foreach (Control c in block.Controls)
-                {
-                    c.MouseUp += (s2, e2) =>
-                    {
-                        if (e2.Button == MouseButtons.Right)
-                        {
-                            pnlCanvas.Controls.Remove(block);
-                            block.Dispose();
-                        }
-                    };
-                }
+                blocoCampo.MouseDoubleClick += Block_MouseDoubleClick;
+                foreach (Control c in blocoCampo.Controls)
+                    c.MouseDoubleClick += Block_MouseDoubleClick;
             }
         }
 
-        private void Block_MouseUp(object sender, MouseEventArgs e)
+        private void Block_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            // Sobe a hierarquia até encontrar o FieldBlockControl
+            Control block = sender as Control;
+            while (block != null && !(block is FieldBlockControl))
+                block = block.Parent;
+
+            if (block is FieldBlockControl bloco)
             {
-                var block = (sender as Control).Parent as Control ?? (sender as Control);
-                if (MessageBox.Show("Remover bloco?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show("Remover este campo do SELECT?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    pnlCanvas.Controls.Remove(block);
-                    block.Dispose();
+                    pnlCanvas.Controls.Remove(bloco);
+                    bloco.Dispose();
                 }
             }
         }
-
 
 
         private void BtnGenerateSql_Click(object sender, EventArgs e)
         {
-            string sql = "-- Blocos no canvas:\n";
-            foreach (Control ctrl in pnlCanvas.Controls)
-            {
-                sql += ctrl.GetType().Name + "\n";
-            }
+            var campos = pnlCanvas.Controls
+                .OfType<FieldBlockControl>()
+                .Select(fb => $"{fb.TableAlias}.{fb.FieldName}")
+                .ToList();
 
+            var tabela = SelectedTable;
+            var alias = GetAliasForTable(tabela);
+
+            string fromClause = $"{tabela} AS {alias}";
+            string sql = $"SELECT {string.Join(", ", campos)} FROM {fromClause};";
             MessageBox.Show(sql, "SQL Gerado");
         }
 
@@ -144,6 +153,63 @@ namespace SmartBuilder_POC.Forms
             var tables = _db.GetTabelas();
             cmbTabelas.Items.Clear();
             cmbTabelas.Items.AddRange(tables.ToArray());
+        }
+
+        private void cmbTabelas_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var tabelaSelecionada = cmbTabelas.SelectedItem?.ToString();
+            if (string.IsNullOrEmpty(tabelaSelecionada))
+                return;
+
+            // Gera alias se ainda não existir
+            if (!_tableAliases.ContainsKey(tabelaSelecionada))
+            {
+                _tableAliases[tabelaSelecionada] = _nextAlias.ToString();
+                _nextAlias++;
+            }
+
+            var campos = _db.GetCampos(tabelaSelecionada);
+            lstCampos.Items.Clear();
+            lstCampos.Items.AddRange(campos.ToArray());
+        }
+
+        private void lstCampos_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (lstCampos.SelectedItem != null && e.Button == MouseButtons.Left)
+                lstCampos.DoDragDrop(lstCampos.SelectedItem.ToString(), DragDropEffects.Copy);
+        }
+
+        private string GetAliasForTable(string tableName)
+        {
+            if (string.IsNullOrEmpty(tableName))
+                return "";
+
+            if (!_tableAliases.TryGetValue(tableName, out string alias))
+            {
+                alias = _nextAlias.ToString();
+                _tableAliases[tableName] = alias;
+                _nextAlias++;
+            }
+            return alias;
+        }
+        private Color GetColorForTable(string tableName)
+        {
+            if (!_tableColors.TryGetValue(tableName, out var color))
+            {
+                color = _palette[_nextColorIndex % _palette.Length];
+                _tableColors[tableName] = color;
+                _nextColorIndex++;
+            }
+            return color;
+        }
+
+        private void btnLimparCanvas_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Deseja realmente limpar todos os blocos da Tela?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                pnlCanvas.Controls.Clear();
+            }
+
         }
     }
 }
