@@ -1,4 +1,5 @@
 ﻿using SmartBuilder_POC.Editors;
+using SmartBuilder_POC.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +20,8 @@ namespace SmartBuilder_POC
             Application.SetCompatibleTextRenderingDefault(false);
 
             string connStr = TestDbFactory.CriarBancoTeste();
-
-            Application.Run(new SelectQueryBuilderForm(connStr));
+            Application.Run(new VisualSqlBuilderForm(connStr));
+            //Application.Run(new SelectQueryBuilderForm(connStr));
             //Application.Run(new FrmSmartBuilder());
         }
     }

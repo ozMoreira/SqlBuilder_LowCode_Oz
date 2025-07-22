@@ -1,36 +1,67 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace SmartBuilder_POC.Controls
 {
     public partial class SelectBlockControl : UserControl
     {
-        //public SqlBlock Bloco { get; }
+
+        private bool _dragging = false;
+        private Point _dragStart;
         public SelectBlockControl()
         {
-            InitializeComponent();
+            this.Size = new Size(140, 60);
+            this.BackColor = Color.LightBlue;
+            this.BorderStyle = BorderStyle.FixedSingle;
 
-            // Criamos o modelo associado
-            //Bloco = new SqlBlock
-           // {
-           //     Tipo = "SELECT",
-            //    Conteudo = "SELECT * FROM TABELA"
-           // };
-
-            //lblSelect.Text = Bloco.Conteudo;
-
-            // Habilita arrastar
-            this.MouseDown += (s, e) =>
+            var label = new Label
             {
-                DoDragDrop(this, DragDropEffects.Move);
+                Text = "SELECT",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter
             };
 
-            this.MouseDown += Block_MouseDown;
-            lblSelect.MouseDown += Block_MouseDown;
+            this.Controls.Add(label);
         }
 
-        private void Block_MouseDown(object sender, MouseEventArgs e)
+        public void EnableMove()
         {
-            DoDragDrop(this, DragDropEffects.Move);
+            this.MouseDown += StartDrag;
+            this.MouseMove += DoDrag;
+            this.MouseUp += EndDrag;
+            // Para a label também:
+            foreach (Control c in this.Controls)
+            {
+                c.MouseDown += StartDrag;
+                c.MouseMove += DoDrag;
+                c.MouseUp += EndDrag;
+            }
+        }
+
+        private void StartDrag(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                _dragging = true;
+                _dragStart = e.Location;
+                this.BringToFront();
+            }
+        }
+
+        private void DoDrag(object sender, MouseEventArgs e)
+        {
+            if (_dragging)
+            {
+                var newLocation = this.Parent.PointToClient(MousePosition);
+                newLocation.Offset(-_dragStart.X, -_dragStart.Y);
+                this.Location = newLocation;
+            }
+        }
+
+        private void EndDrag(object sender, MouseEventArgs e)
+        {
+            _dragging = false;
         }
     }
 }
