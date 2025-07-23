@@ -97,7 +97,7 @@ namespace SmartBuilder_POC.Forms
             {
                 string alias = GetAliasForTable(tabela);
                 Color color = GetColorForTable(tabela);
-                var blocoCampo = new FieldBlockControl(campo, alias, color);
+                var blocoCampo = new FieldBlockControl(campo, alias, tabela, color);
                 Point pt = pnlCanvas.PointToClient(new Point(e.X, e.Y));
                 blocoCampo.Location = pt;
                 blocoCampo.EnableMove();
@@ -129,16 +129,103 @@ namespace SmartBuilder_POC.Forms
 
         private void BtnGenerateSql_Click(object sender, EventArgs e)
         {
-            var campos = pnlCanvas.Controls
+            // 1. Obtenha todos os blocos de campo do canvas
+            var fieldBlocks = pnlCanvas.Controls
                 .OfType<FieldBlockControl>()
+                .ToList();
+
+            if (fieldBlocks.Count == 0)
+            {
+                MessageBox.Show("Nenhum campo selecionado!", "SQL Gerado");
+                return;
+            }
+
+            // 2. SELECT: campos formatados como alias.campo
+            var campos = fieldBlocks
                 .Select(fb => $"{fb.TableAlias}.{fb.FieldName}")
                 .ToList();
 
-            var tabela = SelectedTable;
-            var alias = GetAliasForTable(tabela);
+            // 3. FROM: pega todas as tabelas únicas presentes nos blocos
+            var tabelas = fieldBlocks
+                .GroupBy(fb => new { fb.TableAlias, fb.TableName }) // Adicione uma propriedade TableName no FieldBlockControl!
+                .Select(g => $"{g.Key.TableName} AS {g.Key.TableAlias}")
+                .ToList();
 
-            string fromClause = $"{tabela} AS {alias}";
-            string sql = $"SELECT {string.Join(", ", campos)} FROM {fromClause};";
+            string fromClause = string.Join(", ", tabelas);
+
+            // 4. WHERE: pega filtros definidos nos blocos
+            var wheres = pnlCanvas.Controls
+                .OfType<FieldBlockControl>()
+                .Where(fb => !string.IsNullOrWhiteSpace(fb.FilterOperator))
+                .Select(fb =>
+                {
+                    string campo = $"{fb.TableAlias}.{fb.FieldName}";
+                    string op = fb.FilterOperator;
+                    string valor = fb.FilterValue ?? "";
+
+                if (op == "IS NULL" || op == "IS NOT NULL")
+                {
+                    return $"{campo} {op}";
+                }
+                else if (op == "BETWEEN")
+                {
+                    // Espera-se que o usuário digite algo como: 10 AND 20
+                    // Ou se quiser, pode criar dois campos separados no editor!
+                    var partes = valor.Split(new[] { "AND" }, StringSplitOptions.None);
+                    if (partes.Length == 2)
+                    {
+                        string v1 = partes[0].Trim();
+                        string v2 = partes[1].Trim();
+                        return $"{campo} BETWEEN '{v1.Replace("'", "''")}' AND '{v2.Replace("'", "''")}'";
+                    }
+                    else
+                    {
+                        // Se não estiver no formato esperado, gera o texto bruto mesmo
+                        return $"{campo} BETWEEN {valor}";
+                    }
+                }
+                else if (op == "IN" || op == "NOT IN")
+                {
+                    // Espera-se que o usuário digite: 1,2,3  ou  'a','b','c'
+                    string lista = valor;
+                    if (!valor.Trim().StartsWith("("))
+                        lista = "(" + valor + ")";
+                    return $"{campo} {op} {lista}";
+                }
+                else if (op == "LIKE" || op == "NOT LIKE")
+                {
+                    return $"{campo} {op} '%{valor.Replace("'", "''")}%'";
+                }
+                else
+                {
+                    // Operadores simples (=, <>, >, <, >=, <=)
+                    return $"{campo} {op} '{valor.Replace("'", "''")}'";
+                }
+            })
+                    .ToList();
+
+            string whereClause = wheres.Any() ? "WHERE " + string.Join(" AND ", wheres) : "";
+            // GROUP BY
+            var groupByCampos = pnlCanvas.Controls
+                .OfType<FieldBlockControl>()
+                .Where(fb => fb.IsGroupBy)
+                .Select(fb => $"{fb.TableAlias}.{fb.FieldName}")
+                .ToList();
+
+            string groupByClause = groupByCampos.Any() ? "GROUP BY " + string.Join(", ", groupByCampos) : "";
+
+            // ORDER BY
+            var orderByCampos = pnlCanvas.Controls
+                .OfType<FieldBlockControl>()
+                .Where(fb => fb.IsOrderBy)
+                .Select(fb => $"{fb.TableAlias}.{fb.FieldName} {fb.OrderDirection}")
+                .ToList();
+
+            string orderByClause = orderByCampos.Any() ? "ORDER BY " + string.Join(", ", orderByCampos) : "";
+
+            // SQL final:
+            string sql = $"SELECT {string.Join(", ", campos)}\nFROM {fromClause}\n{whereClause}\n{groupByClause}\n{orderByClause};";// GROUP BY
+            
             MessageBox.Show(sql, "SQL Gerado");
         }
 
