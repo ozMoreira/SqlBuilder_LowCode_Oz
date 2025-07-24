@@ -1,6 +1,6 @@
 ﻿namespace SmartBuilder_POC.Forms
 {
-    partial class VisualSqlBuilderForm
+    partial class FrmVisualSqlBuilder
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VisualSqlBuilderForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmVisualSqlBuilder));
             this.pnlPallete = new System.Windows.Forms.Panel();
             this.pnlCanvas = new System.Windows.Forms.Panel();
             this.btnGenerateSql = new MaterialSkin.Controls.MaterialFlatButton();

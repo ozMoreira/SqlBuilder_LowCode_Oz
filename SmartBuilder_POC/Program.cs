@@ -20,7 +20,7 @@ namespace SmartBuilder_POC
             Application.SetCompatibleTextRenderingDefault(false);
 
             string connStr = TestDbFactory.CriarBancoTeste();
-            Application.Run(new VisualSqlBuilderForm(connStr));
+            Application.Run(new FrmVisualSqlBuilder(connStr));
             //Application.Run(new SelectQueryBuilderForm(connStr));
             //Application.Run(new FrmSmartBuilder());
         }

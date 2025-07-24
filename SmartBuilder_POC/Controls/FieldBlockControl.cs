@@ -1,4 +1,5 @@
 ﻿using SmartBuilder_POC.Editors;
+using System;
 using System.Drawing;
 using System.Runtime.ConstrainedExecution;
 using System.Windows.Forms;
@@ -17,6 +18,8 @@ namespace SmartBuilder_POC.Controls
         public bool IsOrderBy { get; set; }
         public string OrderDirection { get; set; } // "ASC" ou "DESC"
         public bool IsGroupBy { get; set; }
+
+        public event EventHandler OnSolicitarJoin;
 
         public FieldBlockControl(string fieldName, string tableAlias, string tableName, Color color)
         {
@@ -71,6 +74,12 @@ namespace SmartBuilder_POC.Controls
             var removeGroupByItem = new ToolStripMenuItem("Remover Agrupamento");
             removeGroupByItem.Click += (s, e) => { this.IsGroupBy = false; DestacarGrupo(); };
             contextMenu.Items.Add(removeGroupByItem);
+
+            contextMenu.Items.Add(new ToolStripSeparator());
+
+            var joinItem = new ToolStripMenuItem("Relacionar Tabelas (JOIN)");
+            joinItem.Click += (s, e) => OnSolicitarJoin?.Invoke(this, EventArgs.Empty);
+            contextMenu.Items.Add(joinItem);
 
             this.ContextMenuStrip = contextMenu;
 

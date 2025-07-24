@@ -1,22 +1,22 @@
 ﻿using MaterialSkin;
 using SmartBuilder_POC.Controls;
+using SmartBuilder_POC.Editors;
+using SmartBuilder_POC.Helpers;
 using SmartBuilder_POC.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Windows.Forms;
 
 namespace SmartBuilder_POC.Forms
 {
-    public partial class VisualSqlBuilderForm : MaterialSkin.Controls.MaterialForm
+    public partial class FrmVisualSqlBuilder : MaterialSkin.Controls.MaterialForm
     {
         private readonly IDatabaseSchemaProvider _db;
         private readonly Dictionary<string, string> _tableAliases = new Dictionary<string, string>();
-        private char _nextAlias = 'a';
+        private readonly List<JoinDefinition> _joins = new List<JoinDefinition>();
         private readonly Dictionary<string, Color> _tableColors = new Dictionary<string, Color>();
-        private int _nextColorIndex = 0;
         private readonly Color[] _palette = new Color[]
             {
                 Color.LightSkyBlue,
@@ -28,9 +28,11 @@ namespace SmartBuilder_POC.Forms
                 Color.Plum,
                 Color.PeachPuff,
             };
+        private char _nextAlias = 'a';
+        private int _nextColorIndex = 0;
 
         public string SelectedTable => cmbTabelas.SelectedItem?.ToString();
-        public VisualSqlBuilderForm(string connectionString)
+        public FrmVisualSqlBuilder(string connectionString)
         {
             InitializeComponent();
             IDatabaseSchemaProvider schemaProvider = new DatabaseExplorer(connectionString);
@@ -101,6 +103,7 @@ namespace SmartBuilder_POC.Forms
                 Point pt = pnlCanvas.PointToClient(new Point(e.X, e.Y));
                 blocoCampo.Location = pt;
                 blocoCampo.EnableMove();
+                blocoCampo.OnSolicitarJoin += CampoSolicitouJoin;
                 pnlCanvas.Controls.Add(blocoCampo);
 
                 blocoCampo.MouseDoubleClick += Block_MouseDoubleClick;
@@ -126,6 +129,21 @@ namespace SmartBuilder_POC.Forms
             }
         }
 
+        private string GerarFromComJoins()
+        {
+            var blocoPrincipal = pnlCanvas.Controls.OfType<FieldBlockControl>().FirstOrDefault();
+            string tabelaPrincipal = blocoPrincipal.TableName;
+            string aliasPrincipal = blocoPrincipal.TableAlias;
+
+            string fromClause = $"{tabelaPrincipal} AS {aliasPrincipal}";
+            foreach (var join in _joins)
+            {
+                fromClause += $"\n  {aliasPrincipal.ToUpper()}  {join.JoinType.ToUpper()} {join.TargetTable.ToUpper()} AS {join.TargetAlias.ToUpper()} ON " +
+                              $"{join.SourceAlias.ToUpper()}.{join.SourceField.ToUpper()} = {join.TargetAlias.ToUpper()}.{join.TargetField.ToUpper()}";
+            }
+
+            return fromClause;
+        }
 
         private void BtnGenerateSql_Click(object sender, EventArgs e)
         {
@@ -142,16 +160,18 @@ namespace SmartBuilder_POC.Forms
 
             // 2. SELECT: campos formatados como alias.campo
             var campos = fieldBlocks
-                .Select(fb => $"{fb.TableAlias}.{fb.FieldName}")
-                .ToList();
+                .Select(fb => $"{fb.TableAlias.ToUpper()}.{fb.FieldName.ToUpper()}")
+                .ToList()
+                ;
 
             // 3. FROM: pega todas as tabelas únicas presentes nos blocos
             var tabelas = fieldBlocks
                 .GroupBy(fb => new { fb.TableAlias, fb.TableName }) // Adicione uma propriedade TableName no FieldBlockControl!
-                .Select(g => $"{g.Key.TableName} AS {g.Key.TableAlias}")
+                .Select(g => $"{g.Key.TableName.ToUpper()} AS {g.Key.TableAlias.ToUpper()}")
                 .ToList();
 
-            string fromClause = string.Join(", ", tabelas);
+            //string fromClause = string.Join(", ", tabelas);
+            string fromClause = GerarFromComJoins();
 
             // 4. WHERE: pega filtros definidos nos blocos
             var wheres = pnlCanvas.Controls
@@ -159,49 +179,49 @@ namespace SmartBuilder_POC.Forms
                 .Where(fb => !string.IsNullOrWhiteSpace(fb.FilterOperator))
                 .Select(fb =>
                 {
-                    string campo = $"{fb.TableAlias}.{fb.FieldName}";
-                    string op = fb.FilterOperator;
+                    string campo = $"{fb.TableAlias.ToUpper()}.{fb.FieldName.ToUpper()}";
+                    string op = fb.FilterOperator.ToUpper();
                     string valor = fb.FilterValue ?? "";
 
-                if (op == "IS NULL" || op == "IS NOT NULL")
-                {
-                    return $"{campo} {op}";
-                }
-                else if (op == "BETWEEN")
-                {
-                    // Espera-se que o usuário digite algo como: 10 AND 20
-                    // Ou se quiser, pode criar dois campos separados no editor!
-                    var partes = valor.Split(new[] { "AND" }, StringSplitOptions.None);
-                    if (partes.Length == 2)
+                    if (op == "IS NULL" || op == "IS NOT NULL")
                     {
-                        string v1 = partes[0].Trim();
-                        string v2 = partes[1].Trim();
-                        return $"{campo} BETWEEN '{v1.Replace("'", "''")}' AND '{v2.Replace("'", "''")}'";
+                        return $"{campo.ToUpper()} {op.ToUpper()}";
+                    }
+                    else if (op == "BETWEEN")
+                    {
+                        // Espera-se que o usuário digite algo como: 10 AND 20
+                        // Ou se quiser, pode criar dois campos separados no editor!
+                        var partes = valor.Split(new[] { "AND" }, StringSplitOptions.None);
+                        if (partes.Length == 2)
+                        {
+                            string v1 = partes[0].Trim();
+                            string v2 = partes[1].Trim();
+                            return $"{campo.ToUpper()} BETWEEN '{v1.Replace("'", "''")}' AND '{v2.Replace("'", "''")}'";
+                        }
+                        else
+                        {
+                            // Se não estiver no formato esperado, gera o texto bruto mesmo
+                            return $"{campo.ToUpper()} BETWEEN {valor.ToUpper()}";
+                        }
+                    }
+                    else if (op == "IN" || op == "NOT IN")
+                    {
+                        // Espera-se que o usuário digite: 1,2,3  ou  'a','b','c'
+                        string lista = valor;
+                        if (!valor.Trim().StartsWith("("))
+                            lista = "(" + valor + ")";
+                        return $"{campo.ToUpper()} {op} {lista.ToUpper()}";
+                    }
+                    else if (op == "LIKE" || op == "NOT LIKE")
+                    {
+                        return $"{campo.ToUpper()} {op.ToUpper()} '%{valor.Replace("'", "''").ToUpper()}%'";
                     }
                     else
                     {
-                        // Se não estiver no formato esperado, gera o texto bruto mesmo
-                        return $"{campo} BETWEEN {valor}";
+                        // Operadores simples (=, <>, >, <, >=, <=)
+                        return $"{campo.ToUpper()} {op.ToUpper()} '{valor.Replace("'", "''").ToUpper()}'";
                     }
-                }
-                else if (op == "IN" || op == "NOT IN")
-                {
-                    // Espera-se que o usuário digite: 1,2,3  ou  'a','b','c'
-                    string lista = valor;
-                    if (!valor.Trim().StartsWith("("))
-                        lista = "(" + valor + ")";
-                    return $"{campo} {op} {lista}";
-                }
-                else if (op == "LIKE" || op == "NOT LIKE")
-                {
-                    return $"{campo} {op} '%{valor.Replace("'", "''")}%'";
-                }
-                else
-                {
-                    // Operadores simples (=, <>, >, <, >=, <=)
-                    return $"{campo} {op} '{valor.Replace("'", "''")}'";
-                }
-            })
+                })
                     .ToList();
 
             string whereClause = wheres.Any() ? "WHERE " + string.Join(" AND ", wheres) : "";
@@ -209,7 +229,7 @@ namespace SmartBuilder_POC.Forms
             var groupByCampos = pnlCanvas.Controls
                 .OfType<FieldBlockControl>()
                 .Where(fb => fb.IsGroupBy)
-                .Select(fb => $"{fb.TableAlias}.{fb.FieldName}")
+                .Select(fb => $"{fb.TableAlias.ToUpper()}.{fb.FieldName.ToUpper()}")
                 .ToList();
 
             string groupByClause = groupByCampos.Any() ? "GROUP BY " + string.Join(", ", groupByCampos) : "";
@@ -218,14 +238,26 @@ namespace SmartBuilder_POC.Forms
             var orderByCampos = pnlCanvas.Controls
                 .OfType<FieldBlockControl>()
                 .Where(fb => fb.IsOrderBy)
-                .Select(fb => $"{fb.TableAlias}.{fb.FieldName} {fb.OrderDirection}")
+                .Select(fb => $"{fb.TableAlias.ToUpper()}.{fb.FieldName.ToUpper()} {fb.OrderDirection.ToUpper()}")
                 .ToList();
 
             string orderByClause = orderByCampos.Any() ? "ORDER BY " + string.Join(", ", orderByCampos) : "";
 
             // SQL final:
-            string sql = $"SELECT {string.Join(", ", campos)}\nFROM {fromClause}\n{whereClause}\n{groupByClause}\n{orderByClause};";// GROUP BY
-            
+            var linhas = new List<string>
+            {
+                $"SELECT {string.Join(", ", campos)}",
+                $"FROM {fromClause}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(whereClause))
+                linhas.Add(whereClause);
+            if (!string.IsNullOrWhiteSpace(groupByClause))
+                linhas.Add(groupByClause);
+            if (!string.IsNullOrWhiteSpace(orderByClause))
+                linhas.Add(orderByClause);
+
+            string sql = string.Join("\n", linhas) + ";";
             MessageBox.Show(sql, "SQL Gerado");
         }
 
@@ -298,5 +330,59 @@ namespace SmartBuilder_POC.Forms
             }
 
         }
+        private void CampoSolicitouJoin(object sender, EventArgs e)
+        {
+            var blocoOrigem = (FieldBlockControl)sender;
+
+            // 1. Monte o dicionário de tabelas/campos do canvas:
+            var tabelasComCampos = new Dictionary<string, FrmJoinEditor.TabelaInfo>();
+            foreach (var block in pnlCanvas.Controls.OfType<FieldBlockControl>())
+            {
+                if (!tabelasComCampos.ContainsKey(block.TableName))
+                {
+                    tabelasComCampos[block.TableName] = new FrmJoinEditor.TabelaInfo
+                    {
+                        Alias = block.TableAlias,
+                        Campos = new List<string>()
+                    };
+                }
+                if (!tabelasComCampos[block.TableName].Campos.Contains(block.FieldName))
+                    tabelasComCampos[block.TableName].Campos.Add(block.FieldName);
+            }
+
+            // 2. Chame o mini form de join, passando tabela/campo de origem:
+            var frmJoin = new FrmJoinEditor(
+                tabelasComCampos,
+                blocoOrigem.TableName,
+                blocoOrigem.TableAlias,
+                blocoOrigem.FieldName);
+
+            if (frmJoin.ShowDialog() == DialogResult.OK)
+            {
+                // 3. Separe alias e nome das tabelas:
+                var partesTarget = frmJoin.TargetTable.Split(new[] { " - " }, 2, StringSplitOptions.None);
+                string targetAlias = partesTarget[0];
+                string targetTable = partesTarget[1];
+
+                var partesSource = frmJoin.SourceTable.Split(new[] { " - " }, 2, StringSplitOptions.None);
+                string sourceAlias = partesSource[0];
+                string sourceTable = partesSource[1];
+
+                // 4. Adicione o join a sua lista
+                var novoJoin = new JoinDefinition
+                {
+                    SourceTable = sourceTable,
+                    SourceAlias = sourceAlias,
+                    SourceField = frmJoin.SourceField,
+                    TargetTable = targetTable,
+                    TargetAlias = targetAlias,
+                    TargetField = frmJoin.TargetField,
+                    JoinType = frmJoin.JoinType
+                };
+
+                _joins.Add(novoJoin); // _joins é sua lista de joins
+            }
+        }
+
     }
 }
