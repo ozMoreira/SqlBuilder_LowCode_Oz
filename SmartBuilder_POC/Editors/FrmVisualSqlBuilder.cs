@@ -180,15 +180,16 @@ namespace SmartBuilder_POC.Forms
         }
         private void FieldBlock_OnRemoveJoin(object sender, EventArgs e)
         {
-            if (!(sender is FieldBlockControl fb)) return;
+            var fb = sender as FieldBlockControl;
+            if (fb == null) return;
 
-            // Remove todos os joins onde este campo é origem OU destino
+            // Remove _todas_ as definições de join onde seja origem ou destino
             _joins.RemoveAll(j =>
                 (j.SourceAlias == fb.TableAlias && j.SourceField == fb.FieldName) ||
                 (j.TargetAlias == fb.TableAlias && j.TargetField == fb.FieldName)
             );
 
-            // Refaça o desenho
+            // Redesenha o canvas sem os JOINs removidos
             pnlCanvas.Invalidate();
         }
         private void Block_OnRemoveBlock(object sender, EventArgs e)
@@ -459,55 +460,53 @@ namespace SmartBuilder_POC.Forms
         {
             var blocoOrigem = (FieldBlockControl)sender;
 
-            // 1. Monte o dicionário de tabelas/campos do canvas:
+            // 1) Monta o dicionário de tabelas/campos (igual você já faz)
             var tabelasComCampos = new Dictionary<string, FrmJoinEditor.TabelaInfo>();
             foreach (var block in pnlCanvas.Controls.OfType<FieldBlockControl>())
             {
                 if (!tabelasComCampos.ContainsKey(block.TableName))
-                {
                     tabelasComCampos[block.TableName] = new FrmJoinEditor.TabelaInfo
                     {
                         Alias = block.TableAlias,
                         Campos = new List<string>()
                     };
-                }
                 if (!tabelasComCampos[block.TableName].Campos.Contains(block.FieldName))
                     tabelasComCampos[block.TableName].Campos.Add(block.FieldName);
             }
 
-            // 2. Chame o mini form de join, passando tabela/campo de origem:
+            // 2) Abre o editor de joins, passando origem
             var frmJoin = new FrmJoinEditor(
                 tabelasComCampos,
                 blocoOrigem.TableName,
                 blocoOrigem.TableAlias,
                 blocoOrigem.FieldName);
 
-            if (frmJoin.ShowDialog() == DialogResult.OK)
+            if (frmJoin.ShowDialog() != DialogResult.OK)
+                return;
+
+            // 3) Use AS PRÓPRIAS PROPRIEDADES do FrmJoinEditor, já separadas:
+            string sourceAlias = frmJoin.SourceAlias;
+            string sourceTable = frmJoin.SourceTable;
+            string sourceField = frmJoin.SourceField;
+
+            string targetAlias = frmJoin.TargetAlias;
+            string targetTable = frmJoin.TargetTable;
+            string targetField = frmJoin.TargetField;
+
+            // 4) Cria e adiciona o join
+            var novoJoin = new JoinDefinition
             {
-                // 3. Separe alias e nome das tabelas:
-                var partesTarget = frmJoin.TargetTable.Split(new[] { " - " }, 2, StringSplitOptions.None);
-                string targetAlias = partesTarget[0];
-                string targetTable = partesTarget[1];
+                SourceTable = sourceTable,
+                SourceAlias = sourceAlias,
+                SourceField = sourceField,
+                TargetTable = targetTable,
+                TargetAlias = targetAlias,
+                TargetField = targetField,
+                JoinType = frmJoin.JoinType
+            };
 
-                var partesSource = frmJoin.SourceTable.Split(new[] { " - " }, 2, StringSplitOptions.None);
-                string sourceAlias = partesSource[0];
-                string sourceTable = partesSource[1];
-
-                // 4. Adicione o join a sua lista
-                var novoJoin = new JoinDefinition
-                {
-                    SourceTable = sourceTable,
-                    SourceAlias = sourceAlias,
-                    SourceField = frmJoin.SourceField,
-                    TargetTable = targetTable,
-                    TargetAlias = targetAlias,
-                    TargetField = frmJoin.TargetField,
-                    JoinType = frmJoin.JoinType
-                };
-
-                _joins.Add(novoJoin); // _joins é sua lista de joins
-                pnlCanvas.Invalidate();
-            }
+            _joins.Add(novoJoin);
+            pnlCanvas.Invalidate();
         }
     }
 }
