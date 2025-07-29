@@ -29,26 +29,15 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmSqlViewer));
-            this.txtSql = new System.Windows.Forms.TextBox();
             this.pnlButtons = new System.Windows.Forms.Panel();
-            this.dgvResult = new System.Windows.Forms.DataGridView();
-            this.btnExecute = new FontAwesome.Sharp.IconButton();
-            this.btnCoppy = new FontAwesome.Sharp.IconButton();
             this.iconButton1 = new FontAwesome.Sharp.IconButton();
+            this.btnCoppy = new FontAwesome.Sharp.IconButton();
+            this.btnExecute = new FontAwesome.Sharp.IconButton();
+            this.dgvResult = new System.Windows.Forms.DataGridView();
+            this.txtSql = new System.Windows.Forms.TextBox();
             this.pnlButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResult)).BeginInit();
             this.SuspendLayout();
-            // 
-            // txtSql
-            // 
-            this.txtSql.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtSql.Location = new System.Drawing.Point(0, 0);
-            this.txtSql.Multiline = true;
-            this.txtSql.Name = "txtSql";
-            this.txtSql.ReadOnly = true;
-            this.txtSql.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtSql.Size = new System.Drawing.Size(794, 162);
-            this.txtSql.TabIndex = 0;
             // 
             // pnlButtons
             // 
@@ -60,25 +49,17 @@
             this.pnlButtons.Size = new System.Drawing.Size(794, 47);
             this.pnlButtons.TabIndex = 1;
             // 
-            // dgvResult
+            // iconButton1
             // 
-            this.dgvResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvResult.Location = new System.Drawing.Point(0, 222);
-            this.dgvResult.Name = "dgvResult";
-            this.dgvResult.Size = new System.Drawing.Size(794, 150);
-            this.dgvResult.TabIndex = 2;
-            // 
-            // btnExecute
-            // 
-            this.btnExecute.Icon = FontAwesome.Sharp.IconChar.ThList;
-            this.btnExecute.IconColor = System.Drawing.Color.Black;
-            this.btnExecute.IconSize = 32;
-            this.btnExecute.Image = ((System.Drawing.Image)(resources.GetObject("btnExecute.Image")));
-            this.btnExecute.Location = new System.Drawing.Point(3, 3);
-            this.btnExecute.Name = "btnExecute";
-            this.btnExecute.Size = new System.Drawing.Size(272, 41);
-            this.btnExecute.TabIndex = 0;
-            this.btnExecute.UseVisualStyleBackColor = true;
+            this.iconButton1.Icon = FontAwesome.Sharp.IconChar.CommentsO;
+            this.iconButton1.IconColor = System.Drawing.Color.Black;
+            this.iconButton1.IconSize = 32;
+            this.iconButton1.Image = ((System.Drawing.Image)(resources.GetObject("iconButton1.Image")));
+            this.iconButton1.Location = new System.Drawing.Point(281, 3);
+            this.iconButton1.Name = "iconButton1";
+            this.iconButton1.Size = new System.Drawing.Size(272, 41);
+            this.iconButton1.TabIndex = 2;
+            this.iconButton1.UseVisualStyleBackColor = true;
             // 
             // btnCoppy
             // 
@@ -93,17 +74,36 @@
             this.btnCoppy.TabStop = false;
             this.btnCoppy.UseVisualStyleBackColor = true;
             // 
-            // iconButton1
+            // btnExecute
             // 
-            this.iconButton1.Icon = FontAwesome.Sharp.IconChar.CommentsO;
-            this.iconButton1.IconColor = System.Drawing.Color.Black;
-            this.iconButton1.IconSize = 32;
-            this.iconButton1.Image = ((System.Drawing.Image)(resources.GetObject("iconButton1.Image")));
-            this.iconButton1.Location = new System.Drawing.Point(281, 3);
-            this.iconButton1.Name = "iconButton1";
-            this.iconButton1.Size = new System.Drawing.Size(272, 41);
-            this.iconButton1.TabIndex = 2;
-            this.iconButton1.UseVisualStyleBackColor = true;
+            this.btnExecute.Icon = FontAwesome.Sharp.IconChar.ThList;
+            this.btnExecute.IconColor = System.Drawing.Color.Black;
+            this.btnExecute.IconSize = 32;
+            this.btnExecute.Image = ((System.Drawing.Image)(resources.GetObject("btnExecute.Image")));
+            this.btnExecute.Location = new System.Drawing.Point(3, 3);
+            this.btnExecute.Name = "btnExecute";
+            this.btnExecute.Size = new System.Drawing.Size(272, 41);
+            this.btnExecute.TabIndex = 0;
+            this.btnExecute.UseVisualStyleBackColor = true;
+            // 
+            // dgvResult
+            // 
+            this.dgvResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvResult.Location = new System.Drawing.Point(0, 222);
+            this.dgvResult.Name = "dgvResult";
+            this.dgvResult.Size = new System.Drawing.Size(794, 150);
+            this.dgvResult.TabIndex = 2;
+            // 
+            // txtSql
+            // 
+            this.txtSql.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtSql.Location = new System.Drawing.Point(0, 0);
+            this.txtSql.Multiline = true;
+            this.txtSql.Name = "txtSql";
+            this.txtSql.ReadOnly = true;
+            this.txtSql.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtSql.Size = new System.Drawing.Size(794, 162);
+            this.txtSql.TabIndex = 0;
             // 
             // FrmSqlViewer
             // 
@@ -124,12 +124,11 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox txtSql;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.DataGridView dgvResult;
         private FontAwesome.Sharp.IconButton btnCoppy;
         private FontAwesome.Sharp.IconButton btnExecute;
         private FontAwesome.Sharp.IconButton iconButton1;
+        private System.Windows.Forms.TextBox txtSql;
     }
 }

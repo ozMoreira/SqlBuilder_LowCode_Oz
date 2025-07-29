@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SQLite;
 using System.Windows.Forms;
 
 namespace SmartBuilder_POC.Editors
@@ -21,7 +16,7 @@ namespace SmartBuilder_POC.Editors
             InitializeComponent();
             txtSql.Text = sql;
             _connectionString = connectionString;
-
+            ExecutarConsulta();
             btnCoppy.Click += (s, e) => CopiarSql();
             btnExecute.Click += (s, e) => ExecutarConsulta();
         }
@@ -36,21 +31,27 @@ namespace SmartBuilder_POC.Editors
         {
             try
             {
-                using (var conn = new SqlConnection(_connectionString))
+                using (var conn = new SQLiteConnection(_connectionString))
                 {
                     conn.Open();
-                    using (var cmd = new SqlCommand(txtSql.Text, conn))
-                    using (var da = new SqlDataAdapter(cmd))
+                    using (var cmd = new SQLiteCommand(txtSql.Text, conn))
                     {
-                        var dt = new DataTable();
-                        da.Fill(dt);
-                        dgvResult.DataSource = dt;
+                        using (var da = new SQLiteDataAdapter(cmd))
+                        {
+                            var dt = new DataTable();
+                            da.Fill(dt);
+                            dgvResult.DataSource = dt;
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao executar SQL:\n" + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    "Erro ao executar SQL:\n" + ex.Message,
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
     }
