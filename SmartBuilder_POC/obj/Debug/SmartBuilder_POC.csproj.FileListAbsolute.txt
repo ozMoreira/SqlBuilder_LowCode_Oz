@@ -14,9 +14,9 @@ C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\bin\Debug\System.Dat
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.csproj.AssemblyReference.cache
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.csproj.SuggestedBindingRedirects.cache
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Controls.SelectBlockControl.resources
-C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Controls.SelectedTableControl.resources
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Editors.FrmFilterEditor.resources
-C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Editors.SelectQueryBuilderForm.resources
+C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Editors.FrmJoinEditor.resources
+C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Forms.FrmVisualSqlBuilder.resources
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Properties.Resources.resources
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.FrmSmartBuilder.resources
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.csproj.GenerateResource.cache
@@ -24,5 +24,4 @@ C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuild
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.csproj.CopyComplete
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.exe
 C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.pdb
-C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Editors.FrmJoinEditor.resources
-C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Forms.FrmVisualSqlBuilder.resources
+C:\Workspace\SmartBuilder\SmartBuilder_POC\SmartBuilder_POC\obj\Debug\SmartBuilder_POC.Editors.FrmSqlViewer.resources

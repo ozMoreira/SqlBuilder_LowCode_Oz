@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Documents;
 using System.Windows.Forms;
 
 namespace SmartBuilder_POC.Forms
@@ -14,6 +15,8 @@ namespace SmartBuilder_POC.Forms
     public partial class FrmVisualSqlBuilder : MaterialSkin.Controls.MaterialForm
     {
         private readonly IDatabaseSchemaProvider _db;
+        private readonly String conn;
+        private readonly List<string> _allTables;
         private readonly Dictionary<string, string> _tableAliases = new Dictionary<string, string>();
         private readonly List<JoinDefinition> _joins = new List<JoinDefinition>();
         private readonly Dictionary<string, Color> _tableColors = new Dictionary<string, Color>();
@@ -35,9 +38,13 @@ namespace SmartBuilder_POC.Forms
         public FrmVisualSqlBuilder(string connectionString)
         {
             InitializeComponent();
-            IDatabaseSchemaProvider schemaProvider = new DatabaseExplorer(connectionString);
+            pnlCanvas.Paint += pnlCanvas_Paint;
 
+            conn = connectionString;
+            IDatabaseSchemaProvider schemaProvider = new DatabaseExplorer(connectionString);
             _db = schemaProvider;
+            _allTables = _db.GetTabelas().ToList();
+
             var materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.AddFormToManage(this);
             materialSkinManager.Theme = MaterialSkinManager.Themes.LIGHT;
@@ -84,6 +91,36 @@ namespace SmartBuilder_POC.Forms
             pnlPallete.Controls.Add(preview);
         }
 
+        private void pnlCanvas_Paint(object sender, PaintEventArgs e)
+        {
+            foreach (var join in _joins)
+            {
+                // Ache os blocos de campo pelo alias/tabela/campo
+                var origem = pnlCanvas.Controls
+                    .OfType<FieldBlockControl>()
+                    .FirstOrDefault(b => b.TableAlias == join.SourceAlias && b.FieldName == join.SourceField);
+
+                var destino = pnlCanvas.Controls
+                    .OfType<FieldBlockControl>()
+                    .FirstOrDefault(b => b.TableAlias == join.TargetAlias && b.FieldName == join.TargetField);
+
+                if (origem != null && destino != null)
+                {
+                    // Pegue o centro de cada bloco/campo
+                    var pt1 = pnlCanvas.PointToClient(origem.Parent.PointToScreen(origem.Location));
+                    pt1.Offset(origem.Width / 2, origem.Height / 2);
+
+                    var pt2 = pnlCanvas.PointToClient(destino.Parent.PointToScreen(destino.Location));
+                    pt2.Offset(destino.Width / 2, destino.Height / 2);
+
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    using (var pen = new Pen(Color.Red, 2))
+                    {
+                        e.Graphics.DrawLine(pen, pt1, pt2);
+                    }
+                }
+            }
+        }
         private void PnlCanvas_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.Text))
@@ -93,9 +130,38 @@ namespace SmartBuilder_POC.Forms
 
         private void PnlCanvas_DragDrop(object sender, DragEventArgs e)
         {
-            string campo = e.Data.GetData(DataFormats.Text)?.ToString();
-            var tabela = SelectedTable;
-            if (!string.IsNullOrEmpty(campo) && !string.IsNullOrEmpty(tabela))
+            string field = e.Data.GetData(DataFormats.Text)?.ToString();
+            var table = SelectedTable;
+            bool exists = pnlCanvas.Controls
+       .OfType<FieldBlockControl>()
+       .Any(b => b.TableName == table && b.FieldName == field);
+
+            if (string.IsNullOrEmpty(field) || string.IsNullOrEmpty(table))
+                return;
+            if (exists)
+            {
+                MessageBox.Show(
+                    $"O campo “{field}” da tabela “{table}” já foi adicionado.",
+                    "Campo duplicado",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Se não existir, cria o bloco normalmente
+            var alias = GetAliasForTable(table);
+            var color = GetColorForTable(table);
+
+            var block = new FieldBlockControl(field, alias, table, color)
+            {
+                Location = pnlCanvas.PointToClient(new Point(e.X, e.Y))
+            };
+            block.EnableMove();
+            block.OnSolicitarJoin += CampoSolicitouJoin;
+            block.OnRemoveJoin += FieldBlock_OnRemoveJoin;
+            pnlCanvas.Controls.Add(block);
+            pnlCanvas.Invalidate();
+            /*if (!string.IsNullOrEmpty(campo) && !string.IsNullOrEmpty(tabela))
             {
                 string alias = GetAliasForTable(tabela);
                 Color color = GetColorForTable(tabela);
@@ -109,24 +175,56 @@ namespace SmartBuilder_POC.Forms
                 blocoCampo.MouseDoubleClick += Block_MouseDoubleClick;
                 foreach (Control c in blocoCampo.Controls)
                     c.MouseDoubleClick += Block_MouseDoubleClick;
-            }
+          } */
+
+        }
+        private void FieldBlock_OnRemoveJoin(object sender, EventArgs e)
+        {
+            if (!(sender is FieldBlockControl fb)) return;
+
+            // Remove todos os joins onde este campo é origem OU destino
+            _joins.RemoveAll(j =>
+                (j.SourceAlias == fb.TableAlias && j.SourceField == fb.FieldName) ||
+                (j.TargetAlias == fb.TableAlias && j.TargetField == fb.FieldName)
+            );
+
+            // Refaça o desenho
+            pnlCanvas.Invalidate();
+        }
+        private void Block_OnRemoveBlock(object sender, EventArgs e)
+        {
+            var bloco = (FieldBlockControl)sender;
+            pnlCanvas.Controls.Remove(bloco);
+            pnlCanvas.Invalidate();
         }
 
         private void Block_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            // Sobe a hierarquia até encontrar o FieldBlockControl
-            Control block = sender as Control;
-            while (block != null && !(block is FieldBlockControl))
-                block = block.Parent;
+            var ctrl = sender as Control;
+            while (ctrl != null && !(ctrl is FieldBlockControl))
+                ctrl = ctrl.Parent;
 
-            if (block is FieldBlockControl bloco)
+            if (ctrl is FieldBlockControl bloco &&
+                MessageBox.Show("Remover este campo do SELECT?",
+                                "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                if (MessageBox.Show("Remover este campo do SELECT?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    pnlCanvas.Controls.Remove(bloco);
-                    bloco.Dispose();
-                }
+                pnlCanvas.Controls.Remove(bloco);
+                bloco.Dispose();
+                pnlCanvas.Invalidate();
             }
+            /* // Sobe a hierarquia até encontrar o FieldBlockControl
+             Control block = sender as Control;
+             while (block != null && !(block is FieldBlockControl))
+                 block = block.Parent;
+
+             if (block is FieldBlockControl bloco)
+             {
+                 if (MessageBox.Show("Remover este campo do SELECT?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                 {
+                     pnlCanvas.Controls.Remove(bloco);
+                     bloco.Dispose();
+                 }
+             }*/
         }
 
         private string GerarFromComJoins()
@@ -138,7 +236,7 @@ namespace SmartBuilder_POC.Forms
             string fromClause = $"{tabelaPrincipal} AS {aliasPrincipal}";
             foreach (var join in _joins)
             {
-                fromClause += $"\n  {aliasPrincipal.ToUpper()}  {join.JoinType.ToUpper()} {join.TargetTable.ToUpper()} AS {join.TargetAlias.ToUpper()} ON " +
+                fromClause += $"\n {join.JoinType.ToUpper()} {join.TargetTable.ToUpper()} AS {join.TargetAlias.ToUpper()} ON " +
                               $"{join.SourceAlias.ToUpper()}.{join.SourceField.ToUpper()} = {join.TargetAlias.ToUpper()}.{join.TargetField.ToUpper()}";
             }
 
@@ -247,7 +345,7 @@ namespace SmartBuilder_POC.Forms
             var linhas = new List<string>
             {
                 $"SELECT {string.Join(", ", campos)}",
-                $"FROM {fromClause}"
+                $" FROM {fromClause}"
             };
 
             if (!string.IsNullOrWhiteSpace(whereClause))
@@ -258,7 +356,9 @@ namespace SmartBuilder_POC.Forms
                 linhas.Add(orderByClause);
 
             string sql = string.Join("\n", linhas) + ";";
-            MessageBox.Show(sql, "SQL Gerado");
+            //MessageBox.Show(sql, "SQL Gerado");
+            var frm = new FrmSqlViewer(sql, conn);
+            frm.ShowDialog();
         }
 
         private void pnlPallete_MouseDown(object sender, MouseEventArgs e)
@@ -269,9 +369,14 @@ namespace SmartBuilder_POC.Forms
         private void CarregarTabelas()
         {
             // Use seu DatabaseExplorer/serviço de banco
-            var tables = _db.GetTabelas();
-            cmbTabelas.Items.Clear();
-            cmbTabelas.Items.AddRange(tables.ToArray());
+            //var tables = _db.GetTabelas();
+            //cmbTabelas.Items.Clear();
+            //cmbTabelas.Items.AddRange(tables.ToArray());
+            cmbTabelas.Items.AddRange(_allTables.ToArray());
+            cmbTabelas.DropDownStyle = ComboBoxStyle.DropDownList;
+            if (cmbTabelas.Items.Count > 0) cmbTabelas.SelectedIndex = 0;
+
+
         }
 
         private void cmbTabelas_SelectedIndexChanged(object sender, EventArgs e)
@@ -324,10 +429,30 @@ namespace SmartBuilder_POC.Forms
 
         private void btnLimparCanvas_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Deseja realmente limpar todos os blocos da Tela?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                pnlCanvas.Controls.Clear();
-            }
+            if (MessageBox.Show(
+             "Deseja realmente limpar todos os blocos da tela?",
+             "Confirmar",
+             MessageBoxButtons.YesNo,
+             MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
+
+            // 1) Remove todos os controles (blocos de campo e pontos de conexão)
+            pnlCanvas.Controls.Clear();
+
+            // 2) Limpa a lista de joins para que não sejam mais desenhados
+            _joins.Clear();
+
+            // 3) (Opcional) Se você usar outra estrutura de conexões, limpe-a também
+            // RefreshConnectorPoints();
+
+            // 4) Reseta eventuais estados auxiliares (aliases, cores, etc.)
+            _tableAliases.Clear();
+            _tableColors.Clear();
+            _nextAlias = 'a';
+            _nextColorIndex = 0;
+
+            // 5) Força o repaint do painel — agora sem nenhum join desenhado
+            pnlCanvas.Invalidate();
 
         }
         private void CampoSolicitouJoin(object sender, EventArgs e)
@@ -381,8 +506,8 @@ namespace SmartBuilder_POC.Forms
                 };
 
                 _joins.Add(novoJoin); // _joins é sua lista de joins
+                pnlCanvas.Invalidate();
             }
         }
-
     }
 }

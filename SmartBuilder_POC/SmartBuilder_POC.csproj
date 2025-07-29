@@ -87,12 +87,6 @@
     <Compile Include="Controls\SelectBlockControl.Designer.cs">
       <DependentUpon>SelectBlockControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\SelectedTableControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\SelectedTableControl.Designer.cs">
-      <DependentUpon>SelectedTableControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Editors\FrmFilterEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,11 +99,11 @@
     <Compile Include="Editors\FrmJoinEditor.Designer.cs">
       <DependentUpon>FrmJoinEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Editors\SelectQueryBuilderForm.cs">
+    <Compile Include="Editors\FrmSqlViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Editors\SelectQueryBuilderForm.Designer.cs">
-      <DependentUpon>SelectQueryBuilderForm.cs</DependentUpon>
+    <Compile Include="Editors\FrmSqlViewer.Designer.cs">
+      <DependentUpon>FrmSqlViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Editors\FrmVisualSqlBuilder.cs">
       <SubType>Form</SubType>
@@ -119,31 +113,15 @@
     </Compile>
     <Compile Include="Helpers\JoinDefinition.cs" />
     <Compile Include="Helpers\OperatorFilter.cs" />
-    <Compile Include="Helpers\UI\ConditionPanelBuilder.cs" />
     <Compile Include="Infrastructure\TestDbFactory.cs" />
-    <Compile Include="Models\WhereConditions.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Services\ConditionBuilders\BetweenConditionUIBuilder.cs" />
-    <Compile Include="Services\ConditionBuilders\ConditionUIBuilderRegistry.cs" />
-    <Compile Include="Services\ConditionBuilders\EqualsConditionUIBuilder.cs" />
-    <Compile Include="Services\ConditionBuilders\IConditionUIBuilder.cs" />
-    <Compile Include="Services\ConditionBuilders\InConditionUIBuilder.cs" />
-    <Compile Include="Services\ConditionBuilders\LikeConditionUIBuilder.cs" />
-    <Compile Include="Services\ConditionBuilders\NullConditionUIBuilder.cs" />
-    <Compile Include="Services\ConditionBuilders\SimpleValueConditionUIBuilder.cs" />
     <Compile Include="Services\DatabaseExplorer.cs" />
     <Compile Include="Services\FormResizeUtility.cs" />
     <Compile Include="Services\IDatabaseSchemaProvider.cs" />
-    <Compile Include="Services\SqlConditions\BetweenOperatorHandler.cs" />
-    <Compile Include="Services\SqlConditions\ConditionOperatorHandlerRegistry.cs" />
-    <Compile Include="Services\SqlConditions\IConditionOperatorHandler.cs" />
-    <Compile Include="Services\SqlConditions\InOperatorHandler.cs" />
-    <Compile Include="Services\SqlConditions\NullOperatorHandler.cs" />
-    <Compile Include="Services\SqlConditions\SimpleValueOperatorHandler.cs" />
     <Compile Include="Services\SqlQueryBuilderService.cs" />
     <Compile Include="SmartBuilder.cs">
       <SubType>Form</SubType>
@@ -156,17 +134,14 @@
     <EmbeddedResource Include="Controls\SelectBlockControl.resx">
       <DependentUpon>SelectBlockControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\SelectedTableControl.resx">
-      <DependentUpon>SelectedTableControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Editors\FrmFilterEditor.resx">
       <DependentUpon>FrmFilterEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Editors\FrmJoinEditor.resx">
       <DependentUpon>FrmJoinEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Editors\SelectQueryBuilderForm.resx">
-      <DependentUpon>SelectQueryBuilderForm.cs</DependentUpon>
+    <EmbeddedResource Include="Editors\FrmSqlViewer.resx">
+      <DependentUpon>FrmSqlViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Editors\FrmVisualSqlBuilder.resx">
       <DependentUpon>FrmVisualSqlBuilder.cs</DependentUpon>

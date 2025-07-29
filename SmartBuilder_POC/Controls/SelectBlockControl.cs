@@ -17,12 +17,13 @@ namespace SmartBuilder_POC.Controls
 
             var label = new Label
             {
-                Text = "SELECT",
-                Dock = DockStyle.Fill,
+                Text = "PROCEDURE",
+                Dock = DockStyle.Top,
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
             this.Controls.Add(label);
+            
         }
 
         public void EnableMove()

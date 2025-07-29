@@ -20,6 +20,7 @@ namespace SmartBuilder_POC.Controls
         public bool IsGroupBy { get; set; }
 
         public event EventHandler OnSolicitarJoin;
+        public event EventHandler OnRemoveJoin;
 
         public FieldBlockControl(string fieldName, string tableAlias, string tableName, Color color)
         {
@@ -80,6 +81,10 @@ namespace SmartBuilder_POC.Controls
             var joinItem = new ToolStripMenuItem("Relacionar Tabelas (JOIN)");
             joinItem.Click += (s, e) => OnSolicitarJoin?.Invoke(this, EventArgs.Empty);
             contextMenu.Items.Add(joinItem);
+
+            var removeJoinItem = new ToolStripMenuItem("Remover Relacionamento (JOIN)");
+            removeJoinItem.Click += (s, e) => OnRemoveJoin?.Invoke(this, EventArgs.Empty);
+            contextMenu.Items.Add(removeJoinItem);
 
             this.ContextMenuStrip = contextMenu;
 
